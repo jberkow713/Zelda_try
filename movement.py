@@ -22,41 +22,44 @@ RESCALE_HEIGHT = 100
 
 pygame.init()
 
-def random_position(screen_width, screen_height, obj_width, obj_height, Links_position, Links_size):
+def random_position(number, screen_width, screen_height, obj_width, obj_height, Links_position, Links_size):
     '''
     Creates random x,y coordinate positioning for enemies, using board size and link's coordinates
     so as not to overlap Link...can overlap other creatures possibly
     '''
-    possible_width = screen_width - obj_width
-    possible_height = screen_height - obj_height
+    list_of_dragons = []
+    for i in range(number):
+        possible_width = screen_width - obj_width
+        possible_height = screen_height - obj_height
 
 
-    link_x_left_bound = Links_position[0]- .5*Links_size
-    link_x_right_bound = Links_position[0] +.5*Links_size
-    link_y_low_bound = Links_position[1]- .5*Links_size
-    link_y_upper_bound = Links_position[1] +.5*Links_size
-    
-    outside_link_x = False
-
-    while outside_link_x == False:
-        rand_x = random.randint(0, possible_width)
+        link_x_left_bound = Links_position[0]- .5*Links_size
+        link_x_right_bound = Links_position[0] +.5*Links_size
+        link_y_low_bound = Links_position[1]- .5*Links_size
+        link_y_upper_bound = Links_position[1] +.5*Links_size
         
-        if rand_x <link_x_left_bound or rand_x > link_x_right_bound:
-            slightly_rand_x = rand_x
-        
-            outside_link_x = True
+        outside_link_x = False
 
-    outside_link_y = False
-    while outside_link_y == False:
-        rand_y = random.randint(0, possible_height)
-
-        if rand_y < link_y_low_bound or rand_y> link_y_upper_bound:
-            slightly_rand_y = rand_y
+        while outside_link_x == False:
+            rand_x = random.randint(0, possible_width)
             
-            outside_link_y = True
+            if rand_x <link_x_left_bound or rand_x > link_x_right_bound:
+                slightly_rand_x = rand_x
+            
+                outside_link_x = True
+
+        outside_link_y = False
+        while outside_link_y == False:
+            rand_y = random.randint(0, possible_height)
+
+            if rand_y < link_y_low_bound or rand_y> link_y_upper_bound:
+                slightly_rand_y = rand_y
+                
+                outside_link_y = True
+        list_of_dragons.append((slightly_rand_x, slightly_rand_y))        
 
 
-    return (slightly_rand_x, slightly_rand_y)
+    return list_of_dragons
 
 
 def check_coordinates(positionx, positiony, board_width, board_height, obj_width, obj_height):
@@ -92,17 +95,8 @@ player = link.get_rect(topleft=position)
 
 dragon = pygame.image.load('Dragon.jpg')
 dragon = pygame.transform.scale(dragon, (75, 75))
-dragon_pos = random_position(width, height, 75,75, position, RESCALE_WIDTH)
-dragon_pos = dragon.get_rect(topleft=dragon_pos)
 
-dragon2 = pygame.image.load('Dragon.jpg')
-dragon2 = pygame.transform.scale(dragon2, (75, 75))
-dragon2_pos = random_position(width, height, 75,75, position, RESCALE_WIDTH)
-dragon2_pos = dragon.get_rect(topleft=dragon2_pos)
-
-
-
-
+dragon_positions = random_position(8,width, height, 75,75, position, RESCALE_WIDTH)
 
 
 running = True
@@ -169,8 +163,13 @@ while running:
     #player in this case creates a rectangle object
     #the ball is then put onto this surface
     screen.blit(link, player)
-    # screen.blit(link, link_pos)
-    screen.blit(dragon, dragon_pos)
-    screen.blit(dragon2, dragon2_pos)
+    
+    for x in dragon_positions:
+        screen.blit(dragon, x)
+    
+        
+    
+        
+    
     
     pygame.display.flip()
