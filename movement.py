@@ -97,6 +97,27 @@ dragon = pygame.image.load('Dragon.jpg')
 dragon = pygame.transform.scale(dragon, (75, 75))
 
 dragon_positions = random_position(8,width, height, 75,75, position, RESCALE_WIDTH)
+dragon_list = []
+for x in dragon_positions:
+    dragon_list.append(x)
+#TODO create the movement of the dragons or creatures, each needs to be separate, need 
+#hitboxes so they bounce off each other
+secondary_list = []
+horizontal = [[.2,0], [-.2,0],[1]]
+vertical = [[0,.2],[0,-.2],[1]]
+
+length =len(dragon_list)
+index = 0
+while length >0:
+
+    if index %2 == 0:
+        secondary_list.append(horizontal)
+    if index %2 ==1:
+        secondary_list.append(vertical)
+
+    index +=1
+    length -=1
+
 
 
 running = True
@@ -164,9 +185,78 @@ while running:
     #the ball is then put onto this surface
     screen.blit(link, player)
     
-    for x in dragon_positions:
-        screen.blit(dragon, x)
+    #Creating dictionary of dragons and their possible movement patterns as coordinates are updated
+    #We use the secondary list of speeds, and triggers, to determine the movement of a dragon in the list
+    DRAGON_dict = dict(zip(dragon_list,secondary_list))
     
+    
+    
+    
+    length = len(dragon_list)
+    index = 0
+    
+
+    while length >0:
+        horizontal = [[.2,0], [-.2,0],[1]]
+        vertical = [[0,.2],[0,-.2],[1]]
+        horizontal_reversed = [[.2,0], [-.2,0],[-1]]
+        vertical_reversed = [[0,.2],[0,-.2],[-1]] 
+
+        secondary_position = secondary_list[index]
+        
+        
+
+        position = dragon_list[index]
+
+        
+
+        for k,v in DRAGON_dict.items():
+            if position == k:
+                
+                if v[2][0]== 1:
+                            
+                    new_x = position[0]+v[0][0]
+                    new_y = position[1] + v[0][1]
+                
+                elif v[2][0]== -1:
+                    
+                    new_x = position[0]+ v[1][0]
+                    new_y = position[1] + v[1][1]
+
+                coords = check_coordinates(new_x, new_y, width, height, 75,75)
+                
+                if coords[0]>0 and coords[0]< width-75 and coords[1]>0 and coords[1]< height-75:
+                    secondary_list[index]= secondary_position
+                    
+                    x = (coords[0], coords[1])
+        
+                    dragon_list[index] = x
+                    dragon_rect = dragon.get_rect(topleft=x) 
+                    screen.blit(dragon, dragon_rect)
+                    index +=1
+                    length -=1
+                        
+
+                if coords[0]==0 or coords[0]==(width-75) or coords[1]==0 or coords[1]==(height-75):
+                                                            
+                    if secondary_position == horizontal:
+                        secondary_list[index] = horizontal_reversed
+                    elif secondary_position == horizontal_reversed:
+                        secondary_list[index] = horizontal
+                    elif secondary_position == vertical:
+                        secondary_list[index] = vertical_reversed
+                    elif secondary_position == vertical_reversed:
+                        secondary_list[index] = vertical        
+                    
+               
+        
+                    x = (coords[0], coords[1])
+                    
+                    dragon_list[index] = x
+                    dragon_rect = dragon.get_rect(topleft=x) 
+                    screen.blit(dragon, dragon_rect)
+                    index +=1
+                    length -=1
         
     
         
