@@ -228,13 +228,7 @@ while running:
                 if coords[0]>0 and coords[0]< width-75 and coords[1]>0 and coords[1]< height-75:
                     secondary_list[index]= secondary_position
                     
-                    x = (coords[0], coords[1])
-        
-                    dragon_list[index] = x
-                    dragon_rect = dragon.get_rect(topleft=x) 
-                    screen.blit(dragon, dragon_rect)
-                    index +=1
-                    length -=1
+                    
                         
 
                 if coords[0]==0 or coords[0]==(width-75) or coords[1]==0 or coords[1]==(height-75):
@@ -250,13 +244,13 @@ while running:
                     
                
         
-                    x = (coords[0], coords[1])
-                    
-                    dragon_list[index] = x
-                    dragon_rect = dragon.get_rect(topleft=x) 
-                    screen.blit(dragon, dragon_rect)
-                    index +=1
-                    length -=1
+                x = (coords[0], coords[1])
+                
+                dragon_list[index] = x
+                dragon_rect = dragon.get_rect(topleft=x) 
+                screen.blit(dragon, dragon_rect)
+                index +=1
+                length -=1
         
     
         
