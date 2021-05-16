@@ -1,4 +1,3 @@
-
 import pygame
 import random
 import sys
@@ -6,7 +5,7 @@ from pygame.locals import(
     K_UP, K_DOWN, K_LEFT, K_RIGHT,
     K_ESCAPE, KEYDOWN, QUIT
 )
-size = width, height = 1000, 1000
+size = width, height = 1600, 1000
 positionx = size[0] *.5
 positiony = size[1] *.5
 position = (positionx, positiony)
@@ -92,22 +91,19 @@ link = pygame.image.load("link.jpg")
 link = pygame.transform.scale(link, (RESCALE_WIDTH, RESCALE_HEIGHT))
 player = link.get_rect(topleft=position)
 #Setting player's position in center of map
-link_pos = []
-link_pos.append(position)
-
 
 dragon = pygame.image.load('Dragon.jpg')
 dragon = pygame.transform.scale(dragon, (75, 75))
 
-dragon_positions = random_position(8,width, height, 75,75, position, RESCALE_WIDTH)
+dragon_positions = random_position(5,width, height, 75,75, position, RESCALE_WIDTH)
 dragon_list = []
 for x in dragon_positions:
     dragon_list.append(x)
 #TODO create the movement of the dragons or creatures, each needs to be separate, need 
 #hitboxes so they bounce off each other
 secondary_list = []
-horizontal = [[.2,0], [-.2,0],[1]]
-vertical = [[0,.2],[0,-.2],[1]]
+horizontal = [[.4,0], [-.4,0],[1]]
+vertical = [[0,.4],[0,-.4],[1]]
 
 length =len(dragon_list)
 index = 0
@@ -140,7 +136,6 @@ while running:
                 
                 positiony = coords[1]
                 position = (coords[0], coords[1])
-                link_pos.append(position)
                 
                 player = link.get_rect(topleft=position)
 
@@ -156,7 +151,6 @@ while running:
                 positionx = coords[0]
                 position = (coords[0], coords[1])
                 player = link.get_rect(topleft=position)
-                link_pos.append(position)
 
                 
                             
@@ -168,7 +162,6 @@ while running:
                 positionx = coords[0]
                 position = (coords[0], coords[1])
                 player = link.get_rect(topleft=position)
-                link_pos.append(position)
 
                 
                 
@@ -181,7 +174,6 @@ while running:
                 positiony = coords[1]
                 position = (coords[0], coords[1])
                 player = link.get_rect(topleft=position)
-                link_pos.append(position)
 
                 
                                  
@@ -190,25 +182,13 @@ while running:
     #blit takes an object, and puts it on a surface
     #player in this case creates a rectangle object
     #the ball is then put onto this surface
-    
     screen.blit(link, player)
     
     #Creating dictionary of dragons and their possible movement patterns as coordinates are updated
     #We use the secondary list of speeds, and triggers, to determine the movement of a dragon in the list
     DRAGON_dict = dict(zip(dragon_list,secondary_list))
     
-    to_avoid_x = []
-    for x in dragon_list:
-        to_avoid_x.append(x[0])
-    to_avoid_x.append(link_pos[0][0])
-
-    to_avoid_y = []
-    for x in dragon_list:
-        to_avoid_y.append(x[1])
-    to_avoid_y.append(link_pos[0][1])        
-       
-    checked_x = []
-    checked_y = []   
+    
     
     
     length = len(dragon_list)
@@ -216,22 +196,13 @@ while running:
     
 
     while length >0:
-        horizontal = [[.2,0], [-.2,0],[1]]
-        vertical = [[0,.2],[0,-.2],[1]]
-        horizontal_reversed = [[.2,0], [-.2,0],[-1]]
-        vertical_reversed = [[0,.2],[0,-.2],[-1]] 
+        horizontal = [[.4,0], [-.4,0],[1]]
+        vertical = [[0,.4],[0,-.4],[1]]
+        horizontal_reversed = [[.4,0], [-.4,0],[-1]]
+        vertical_reversed = [[0,.4],[0,-.4],[-1]] 
 
         secondary_position = secondary_list[index]
-        #creating additional coordinates to avoid based on other enemies and player objects
-        avoided_x_enumerated = list(enumerate(to_avoid_x))
-        avoided_y_enumerated = list(enumerate(to_avoid_y))
         
-        for x in avoided_x_enumerated:
-            if x[0]!= index:
-                checked_x.append(x[1])
-        for x in avoided_y_enumerated:
-            if x[0]!= index:
-                checked_y.append(x[1])        
         
 
         position = dragon_list[index]
@@ -259,10 +230,7 @@ while running:
                     
                         
 
-                if coords[0]==0 or coords[0]==(width-75) \
-                    or coords[1]==0 or coords[1]==(height-75)\
-                        :
-                                 
+                if coords[0]==0 or coords[0]==(width-75) or coords[1]==0 or coords[1]==(height-75):
                                                             
                     if secondary_position == horizontal:
                         secondary_list[index] = horizontal_reversed
@@ -272,68 +240,7 @@ while running:
                         secondary_list[index] = vertical_reversed
                     elif secondary_position == vertical_reversed:
                         secondary_list[index] = vertical        
-                
-                coords_right = coords[0]+75
-                coords_left = coords[0]-75
-                coords_upper = coords[1]-75
-                coords_lower = coords[1]+75
-                
-                changed = False
-                
-                for x in checked_x:
-                    if x !=0:
-
                     
-                        if coords_right/x >.995 and coords_right<1:
-                            changed=True 
-                            if secondary_position == horizontal:
-                                secondary_list[index] = horizontal_reversed
-                            elif secondary_position == horizontal_reversed:
-                                secondary_list[index] = horizontal
-                            elif secondary_position == vertical:
-                                secondary_list[index] = vertical_reversed
-                            elif secondary_position == vertical_reversed:
-                                secondary_list[index] = vertical
-                            break
-
-                        if coords_left/x >.995 and coords_left<1:
-                            changed=True
-                            if secondary_position == horizontal:
-                                secondary_list[index] = horizontal_reversed
-                            elif secondary_position == horizontal_reversed:
-                                secondary_list[index] = horizontal
-                            elif secondary_position == vertical:
-                                secondary_list[index] = vertical_reversed
-                            elif secondary_position == vertical_reversed:
-                                secondary_list[index] = vertical
-                if changed == False:
-
-                    for x in checked_y:
-                        if x !=0:
-
-                            if coords_upper/x >.995 and coords_upper/x <1:
-                                if secondary_position == horizontal:
-                                    secondary_list[index] = horizontal_reversed
-                                elif secondary_position == horizontal_reversed:
-                                    secondary_list[index] = horizontal
-                                elif secondary_position == vertical:
-                                    secondary_list[index] = vertical_reversed
-                                elif secondary_position == vertical_reversed:
-                                    secondary_list[index] = vertical
-                                break     
-                            if coords_lower/x >.995 and coords_lower/x <1:
-                                if secondary_position == horizontal:
-                                    secondary_list[index] = horizontal_reversed
-                                elif secondary_position == horizontal_reversed:
-                                    secondary_list[index] = horizontal
-                                elif secondary_position == vertical:
-                                    secondary_list[index] = vertical_reversed
-                                elif secondary_position == vertical_reversed:
-                                    secondary_list[index] = vertical          
-
-
-
-
                
         
                 x = (coords[0], coords[1])
@@ -343,11 +250,11 @@ while running:
                 screen.blit(dragon, dragon_rect)
                 index +=1
                 length -=1
-                #clear lists so next value has empty list to append to
-                checked_x.clear()
-                checked_y.clear()
+        
     
         
     
     
     pygame.display.flip()
+
+
