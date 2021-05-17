@@ -6,7 +6,7 @@ from pygame.locals import(
     K_UP, K_DOWN, K_LEFT, K_RIGHT,
     K_ESCAPE, KEYDOWN, QUIT
 )
-size = width, height = 1000, 1000
+size = width, height = 1500, 1050
 positionx = size[0] *.5
 positiony = size[1] *.5
 position = (positionx, positiony)
@@ -106,8 +106,8 @@ for x in dragon_positions:
 #TODO create the movement of the dragons or creatures, each needs to be separate, need 
 #hitboxes so they bounce off each other
 secondary_list = []
-horizontal = [[.2,0], [-.2,0],[1]]
-vertical = [[0,.2],[0,-.2],[1]]
+horizontal = [[.4,0], [-.4,0],[1]]
+vertical = [[0,.4],[0,-.4],[1]]
 
 length =len(dragon_list)
 index = 0
@@ -183,7 +183,7 @@ while running:
                 player = link.get_rect(topleft=position)
                 link_pos.append(position)
 
-                
+          
                                  
     
     screen.fill(white)
@@ -200,12 +200,12 @@ while running:
     to_avoid_x = []
     for x in dragon_list:
         to_avoid_x.append(x[0])
-    to_avoid_x.append(link_pos[0][0])
+    to_avoid_x.append(link_pos[-1][0])
 
     to_avoid_y = []
     for x in dragon_list:
         to_avoid_y.append(x[1])
-    to_avoid_y.append(link_pos[0][1])        
+    to_avoid_y.append(link_pos[-1][1])        
        
     checked_x = []
     checked_y = []   
@@ -216,10 +216,10 @@ while running:
     
 
     while length >0:
-        horizontal = [[.2,0], [-.2,0],[1]]
-        vertical = [[0,.2],[0,-.2],[1]]
-        horizontal_reversed = [[.2,0], [-.2,0],[-1]]
-        vertical_reversed = [[0,.2],[0,-.2],[-1]] 
+        horizontal = [[.4,0], [-.4,0],[1]]
+        vertical = [[0,.4],[0,-.4],[1]]
+        horizontal_reversed = [[.4,0], [-.4,0],[-1]]
+        vertical_reversed = [[0,.4],[0,-.4],[-1]] 
 
         secondary_position = secondary_list[index]
         #creating additional coordinates to avoid based on other enemies and player objects
@@ -233,6 +233,8 @@ while running:
             if x[0]!= index:
                 checked_y.append(x[1])        
         
+        to_check_dict = dict(zip(checked_x, checked_y))
+        # print(to_check_dict)
 
         position = dragon_list[index]
 
@@ -252,40 +254,49 @@ while running:
                     new_y = position[1] + v[1][1]
 
                 coords = check_coordinates(new_x, new_y, width, height, 75,75)
+
+        Coords_Checked = False 
+        #Begin Collision Checking, wall checking, etc...                   
                 
-                if coords[0]>0 and coords[0]< width-75 and coords[1]>0 and coords[1]< height-75:
-                    secondary_list[index]= secondary_position
-                    
-                    
+        if Coords_Checked == False:
+            #Check to see if two enemies randomly started overlapping
+            for k,v in to_check_dict.items():
+                
+
+                if abs(coords[0]-k) <50:
+                    if abs(coords[1]-v) <50:
+                        possible = [horizontal, horizontal_reversed, vertical, vertical_reversed]    
+                        rand = random.randint(0,3)
                         
+                        secondary_list[index] = possible[rand]  
+                                                
+                        Coords_Checked = True
+        
+        
+        if Coords_Checked == False:
 
-                if coords[0]==0 or coords[0]==(width-75) \
-                    or coords[1]==0 or coords[1]==(height-75)\
-                        :
-                                 
-                                                            
-                    if secondary_position == horizontal:
-                        secondary_list[index] = horizontal_reversed
-                    elif secondary_position == horizontal_reversed:
-                        secondary_list[index] = horizontal
-                    elif secondary_position == vertical:
-                        secondary_list[index] = vertical_reversed
-                    elif secondary_position == vertical_reversed:
-                        secondary_list[index] = vertical        
-                
-                coords_right = coords[0]+75
-                coords_left = coords[0]-75
-                coords_upper = coords[1]-75
-                coords_lower = coords[1]+75
-                
-                changed = False
-                
-                for x in checked_x:
-                    if x !=0:
-
+            if coords[0]==0 or coords[0]==(width-75) \
+                or coords[1]==0 or coords[1]==(height-75):
                     
-                        if coords_right/x >.995 and coords_right<1:
-                            changed=True 
+                if secondary_position == horizontal:
+                    secondary_list[index] = horizontal_reversed
+                elif secondary_position == horizontal_reversed:
+                    secondary_list[index] = horizontal
+                elif secondary_position == vertical:
+                    secondary_list[index] = vertical_reversed
+                elif secondary_position == vertical_reversed:
+                    secondary_list[index] = vertical        
+                
+                Coords_Checked = True
+
+        if Coords_Checked == False:
+            for k,v in to_check_dict.items():
+                if k != 0 and v !=0:
+
+                    if coords[0]/k >.98 and coords[0]/k < 1:
+                        if coords[1]/v >.98 and coords[1]/v <1:
+
+                            
                             if secondary_position == horizontal:
                                 secondary_list[index] = horizontal_reversed
                             elif secondary_position == horizontal_reversed:
@@ -294,59 +305,31 @@ while running:
                                 secondary_list[index] = vertical_reversed
                             elif secondary_position == vertical_reversed:
                                 secondary_list[index] = vertical
-                            break
 
-                        if coords_left/x >.995 and coords_left<1:
-                            changed=True
-                            if secondary_position == horizontal:
-                                secondary_list[index] = horizontal_reversed
-                            elif secondary_position == horizontal_reversed:
-                                secondary_list[index] = horizontal
-                            elif secondary_position == vertical:
-                                secondary_list[index] = vertical_reversed
-                            elif secondary_position == vertical_reversed:
-                                secondary_list[index] = vertical
-                if changed == False:
+                            Coords_Checked = True       
+        
+        if Coords_Checked == False:
 
-                    for x in checked_y:
-                        if x !=0:
-
-                            if coords_upper/x >.995 and coords_upper/x <1:
-                                if secondary_position == horizontal:
-                                    secondary_list[index] = horizontal_reversed
-                                elif secondary_position == horizontal_reversed:
-                                    secondary_list[index] = horizontal
-                                elif secondary_position == vertical:
-                                    secondary_list[index] = vertical_reversed
-                                elif secondary_position == vertical_reversed:
-                                    secondary_list[index] = vertical
-                                break     
-                            if coords_lower/x >.995 and coords_lower/x <1:
-                                if secondary_position == horizontal:
-                                    secondary_list[index] = horizontal_reversed
-                                elif secondary_position == horizontal_reversed:
-                                    secondary_list[index] = horizontal
-                                elif secondary_position == vertical:
-                                    secondary_list[index] = vertical_reversed
-                                elif secondary_position == vertical_reversed:
-                                    secondary_list[index] = vertical          
+            # if coords[0]>0 and coords[0]< width-75 and coords[1]>0 and coords[1]< height-75:
+            secondary_list[index]= secondary_position
+                  
 
 
 
 
                
         
-                x = (coords[0], coords[1])
-                
-                dragon_list[index] = x
-                dragon_rect = dragon.get_rect(topleft=x) 
-                screen.blit(dragon, dragon_rect)
-                index +=1
-                length -=1
-                #clear lists so next value has empty list to append to
-                checked_x.clear()
-                checked_y.clear()
-    
+        x = (coords[0], coords[1])
+        
+        dragon_list[index] = x
+        dragon_rect = dragon.get_rect(topleft=x) 
+        screen.blit(dragon, dragon_rect)
+        index +=1
+        length -=1
+        #clear lists so next value has empty list to append to
+        checked_x.clear()
+        checked_y.clear()
+
         
     
     
