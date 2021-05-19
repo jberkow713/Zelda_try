@@ -88,7 +88,7 @@ def check_coordinates(positionx, positiony, board_width, board_height, obj_width
     return positionx, positiony                   
 
 screen = pygame.display.set_mode(size)
-link = pygame.image.load("link.jpg")
+link = pygame.image.load("link.jpg").convert_alpha()
 link = pygame.transform.scale(link, (RESCALE_WIDTH, RESCALE_HEIGHT))
 player = link.get_rect(topleft=position)
 #Setting player's position in center of map
@@ -106,8 +106,8 @@ for x in dragon_positions:
 #TODO create the movement of the dragons or creatures, each needs to be separate, need 
 #hitboxes so they bounce off each other
 secondary_list = []
-horizontal = [[.7,0], [-.7,0],[1]]
-vertical = [[0,.7],[0,-.7],[1]]
+horizontal = [[.8,0], [-.8,0],[1]]
+vertical = [[0,.8],[0,-.8],[1]]
 
 length =len(dragon_list)
 index = 0
@@ -216,10 +216,10 @@ while running:
     
 
     while length >0:
-        horizontal = [[.7,0], [-.7,0],[1]]
-        vertical = [[0,.7],[0,-.7],[1]]
-        horizontal_reversed = [[.7,0], [-.7,0],[-1]]
-        vertical_reversed = [[0,.7],[0,-.7],[-1]] 
+        horizontal = [[.8,0], [-.8,0],[1]]
+        vertical = [[0,.8],[0,-.8],[1]]
+        horizontal_reversed = [[.8,0], [-.8,0],[-1]]
+        vertical_reversed = [[0,.8],[0,-.8],[-1]] 
 
         secondary_position = secondary_list[index]
         #creating additional coordinates to avoid based on other enemies and player objects
@@ -306,20 +306,27 @@ while running:
                     # 
                     # This mapping will ensure that basically there is no overlap, if there is no starting
                     # overlap        
+                    Close = False 
+                    
                     if coords[0]/k >.93 and coords[0]/k < 1:
                         if coords[1]/v >.899 and coords[1]/v <1:
+                            Close = True
 
-                            
-                            if secondary_position == horizontal:
-                                secondary_list[index] = horizontal_reversed
-                            elif secondary_position == horizontal_reversed:
-                                secondary_list[index] = horizontal
-                            elif secondary_position == vertical:
-                                secondary_list[index] = vertical_reversed
-                            elif secondary_position == vertical_reversed:
-                                secondary_list[index] = vertical
+                    if coords[1]/v >.899 and coords[1]/v <1:
+                        if coords[0]/k >.93 and coords[0]/k < 1:
+                            Close = True 
 
-                            Coords_Checked = True       
+                    if Close == True:
+
+                        
+                        possible = [horizontal, horizontal_reversed, vertical, vertical_reversed]    
+                        rand = random.randint(0,3)
+                        
+                        secondary_list[index] = possible[rand]  
+                                                
+                        Coords_Checked = True
+
+                               
         
         if Coords_Checked == False:
 
