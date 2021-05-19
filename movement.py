@@ -57,9 +57,61 @@ def random_position(number, screen_width, screen_height, obj_width, obj_height, 
                 
                 outside_link_y = True
         list_of_dragons.append((slightly_rand_x, slightly_rand_y))        
+    
+    #[(184, 378), (903, 102), (394, 132), (531, 215), (694, 871)]
+    #[(0, (184, 378)), (1, (903, 102)), (2, (394, 132)), (3, (531, 215)), (4, (694, 871))]
+
+    updated_list_of_dragons = []
+    
+    length = len(list_of_dragons)
+    index = 0
+    while length >0:
+        enumerated = list(enumerate(list_of_dragons))
+        x_indices = []
+        y_indices =[]
+        x_val = list_of_dragons[index][0]
+        y_val = list_of_dragons[index][1]
+
+        for x in enumerated:
+            if x[0] != index:
+                x_indices.append(x[1][0])
+                y_indices.append(x[1][1])
+        
+        x_distance = False 
+        y_distance = False
+        x_count = 0
+
+        for x in x_indices:
+            if abs(x_val-x)> obj_width:
+                x_count +=1
+        if x_count == len(x_indices):
+            x_distance = True
+        
+        if x_distance == True:
 
 
-    return list_of_dragons
+            y_count = 0
+
+            for x in y_indices:
+                if abs(y_val-x)> obj_height:
+                    y_count +=1
+            if y_count == len(y_indices):
+                y_distance = True
+
+        if x_distance == True and y_distance == True:
+            new_coord = (x_val, y_val)
+            updated_list_of_dragons.append(new_coord)
+
+        if x_distance == False or y_distance == False:
+            updated_dist = 10000*index 
+            list_of_dragons[index] = (updated_dist,updated_dist)
+        
+
+        index +=1
+        length -=1    
+    
+
+    return updated_list_of_dragons
 
 
 def check_coordinates(positionx, positiony, board_width, board_height, obj_width, obj_height):
@@ -99,14 +151,21 @@ link_pos.append(position)
 dragon = pygame.image.load('Dragon.jpg').convert_alpha()
 dragon = pygame.transform.scale(dragon, (75, 75))
 
-dragon_positions = random_position(5,width, height, 75,75, position, RESCALE_WIDTH)
+at_least_5 = False
+while at_least_5 == False:
+
+    dragon_positions = random_position(20,width, height, 75,75, position, RESCALE_WIDTH)
+    
+    if len(dragon_positions)>=5:
+        at_least_5 = True
+
 dragon_list = []
 for x in dragon_positions:
     dragon_list.append(x)
 #TODO create the movement of the dragons or creatures, each needs to be separate, need 
 #hitboxes so they bounce off each other
 
-SPEED = 3
+SPEED = 1
 secondary_list = []
 horizontal = [[SPEED,0], [-SPEED,0],[1]]
 vertical = [[0,SPEED],[0,-SPEED],[1]]
@@ -319,12 +378,12 @@ while running:
                     # overlap        
                     Close = False 
                     
-                    if coords[0]/k >.93 and coords[0]/k < 1:
-                        if coords[1]/v >.899 and coords[1]/v <1:
+                    if coords[0]/k >.88 and coords[0]/k < 1:
+                        if coords[1]/v >.88 and coords[1]/v <1:
                             Close = True
 
-                    if coords[1]/v >.899 and coords[1]/v <1:
-                        if coords[0]/k >.93 and coords[0]/k < 1:
+                    if coords[1]/v >.88 and coords[1]/v <1:
+                        if coords[0]/k >.88 and coords[0]/k < 1:
                             Close = True 
 
                     if Close == True:
