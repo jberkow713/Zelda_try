@@ -96,7 +96,7 @@ link_pos = []
 link_pos.append(position)
 
 
-dragon = pygame.image.load('Dragon.jpg')
+dragon = pygame.image.load('Dragon.jpg').convert_alpha()
 dragon = pygame.transform.scale(dragon, (75, 75))
 
 dragon_positions = random_position(8,width, height, 75,75, position, RESCALE_WIDTH)
@@ -106,8 +106,8 @@ for x in dragon_positions:
 #TODO create the movement of the dragons or creatures, each needs to be separate, need 
 #hitboxes so they bounce off each other
 secondary_list = []
-horizontal = [[.4,0], [-.4,0],[1]]
-vertical = [[0,.4],[0,-.4],[1]]
+horizontal = [[.7,0], [-.7,0],[1]]
+vertical = [[0,.7],[0,-.7],[1]]
 
 length =len(dragon_list)
 index = 0
@@ -216,10 +216,10 @@ while running:
     
 
     while length >0:
-        horizontal = [[.4,0], [-.4,0],[1]]
-        vertical = [[0,.4],[0,-.4],[1]]
-        horizontal_reversed = [[.4,0], [-.4,0],[-1]]
-        vertical_reversed = [[0,.4],[0,-.4],[-1]] 
+        horizontal = [[.7,0], [-.7,0],[1]]
+        vertical = [[0,.7],[0,-.7],[1]]
+        horizontal_reversed = [[.7,0], [-.7,0],[-1]]
+        vertical_reversed = [[0,.7],[0,-.7],[-1]] 
 
         secondary_position = secondary_list[index]
         #creating additional coordinates to avoid based on other enemies and player objects
@@ -259,21 +259,7 @@ while running:
         #Begin Collision Checking, wall checking, etc...                   
                 
         if Coords_Checked == False:
-            #Check to see if two enemies randomly started overlapping
-            for k,v in to_check_dict.items():
-                
-
-                if abs(coords[0]-k) <50:
-                    if abs(coords[1]-v) <50:
-                        possible = [horizontal, horizontal_reversed, vertical, vertical_reversed]    
-                        rand = random.randint(0,3)
-                        
-                        secondary_list[index] = possible[rand]  
-                                                
-                        Coords_Checked = True
-        
-        
-        if Coords_Checked == False:
+            #Wall Check
 
             if coords[0]==0 or coords[0]==(width-75) \
                 or coords[1]==0 or coords[1]==(height-75):
@@ -287,14 +273,41 @@ while running:
                 elif secondary_position == vertical_reversed:
                     secondary_list[index] = vertical        
                 
-                Coords_Checked = True
+                
+                Coords_Checked = True 
+        
+        
+        if Coords_Checked == False:
+            #Check to see if two enemies are overlapping or started overlapping
+            for k,v in to_check_dict.items():
+                
+
+                if abs(coords[0]-k) <76:
+                    if abs(coords[1]-v) <76:
+                        possible = [horizontal, horizontal_reversed, vertical, vertical_reversed]    
+                        rand = random.randint(0,3)
+                        
+                        secondary_list[index] = possible[rand]  
+                                                
+                        Coords_Checked = True
+               
 
         if Coords_Checked == False:
             for k,v in to_check_dict.items():
                 if k != 0 and v !=0:
-
-                    if coords[0]/k >.98 and coords[0]/k < 1:
-                        if coords[1]/v >.98 and coords[1]/v <1:
+                    #you need to create variables there that represent the size of the creature, versus
+                    # the size of the map...
+                    # in this case, the x size of the map, or width, is 1500, and the dragon is 75
+                    # so this represents .05 of the map, hence, k >.95, means that the dragon will change
+                    # direction on the x axis, right before it overlaps another dragon
+                    # 
+                    # Same can be said about the y axis, and you can air on the side of caution in that
+                    # you have them split maybe a bit early, to avoid overlap
+                    # 
+                    # This mapping will ensure that basically there is no overlap, if there is no starting
+                    # overlap        
+                    if coords[0]/k >.93 and coords[0]/k < 1:
+                        if coords[1]/v >.899 and coords[1]/v <1:
 
                             
                             if secondary_position == horizontal:
