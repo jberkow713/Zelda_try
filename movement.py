@@ -99,15 +99,17 @@ link_pos.append(position)
 dragon = pygame.image.load('Dragon.jpg').convert_alpha()
 dragon = pygame.transform.scale(dragon, (75, 75))
 
-dragon_positions = random_position(8,width, height, 75,75, position, RESCALE_WIDTH)
+dragon_positions = random_position(5,width, height, 75,75, position, RESCALE_WIDTH)
 dragon_list = []
 for x in dragon_positions:
     dragon_list.append(x)
 #TODO create the movement of the dragons or creatures, each needs to be separate, need 
 #hitboxes so they bounce off each other
+
+SPEED = 3
 secondary_list = []
-horizontal = [[.8,0], [-.8,0],[1]]
-vertical = [[0,.8],[0,-.8],[1]]
+horizontal = [[SPEED,0], [-SPEED,0],[1]]
+vertical = [[0,SPEED],[0,-SPEED],[1]]
 
 length =len(dragon_list)
 index = 0
@@ -216,10 +218,10 @@ while running:
     
 
     while length >0:
-        horizontal = [[.8,0], [-.8,0],[1]]
-        vertical = [[0,.8],[0,-.8],[1]]
-        horizontal_reversed = [[.8,0], [-.8,0],[-1]]
-        vertical_reversed = [[0,.8],[0,-.8],[-1]] 
+        horizontal = [[SPEED,0], [-SPEED,0],[1]]
+        vertical = [[0,SPEED],[0,-SPEED],[1]]
+        horizontal_reversed = [[SPEED,0], [-SPEED,0],[-1]]
+        vertical_reversed = [[0,SPEED],[0,-SPEED],[-1]] 
 
         secondary_position = secondary_list[index]
         #creating additional coordinates to avoid based on other enemies and player objects
@@ -281,15 +283,24 @@ while running:
             #Check to see if two enemies are overlapping or started overlapping
             for k,v in to_check_dict.items():
                 
-
+                Close = False 
                 if abs(coords[0]-k) <76:
                     if abs(coords[1]-v) <76:
-                        possible = [horizontal, horizontal_reversed, vertical, vertical_reversed]    
-                        rand = random.randint(0,3)
+                        Close = True 
+                if abs(coords[1]-v) <76:
+                    if abs(coords[0]-k) <76:
+                        Close = True 
+
+                if Close == True:
                         
-                        secondary_list[index] = possible[rand]  
-                                                
-                        Coords_Checked = True
+
+
+                    possible = [horizontal, horizontal_reversed, vertical, vertical_reversed]    
+                    rand = random.randint(0,3)
+                    
+                    secondary_list[index] = possible[rand]  
+                                            
+                    Coords_Checked = True
                
 
         if Coords_Checked == False:
