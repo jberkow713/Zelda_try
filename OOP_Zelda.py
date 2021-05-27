@@ -214,45 +214,34 @@ class Link:
         
     def update(self):
         
-        #MOVEMENT
+                #MOVEMENT
+        self.down = False
+        self.up = False
+        self.left = False
+        self.right = False
+        
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
+        if keys[pygame.K_DOWN]:
             self.y += player_speed
-            self.x += 0
             self.down = True
-            self.up = False
-            self.left = False
-            self.right = False
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
 
-        if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
+        if keys[pygame.K_UP]:
             self.y -= player_speed
-            self.x += 0
-            self.down = False
             self.up = True 
-            self.left = False
-            self.right = False
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
 
-        if keys[pygame.K_RIGHT] and not keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_LEFT]:
-            self.y += 0
+        if keys[pygame.K_RIGHT]:
             self.x += player_speed
-            self.down = False
-            self.up = False
-            self.left = False
             self.right = True
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
 
-        if keys[pygame.K_LEFT] and not keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT]:
-            self.y += 0
+        if keys[pygame.K_LEFT]:
             self.x -= player_speed
-            self.down = False
-            self.up = False
             self.left = True 
-            self.right = False
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
 
