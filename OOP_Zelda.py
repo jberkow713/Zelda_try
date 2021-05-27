@@ -68,7 +68,7 @@ class Ghost:
     def coords_to_avoid(self):
         #This returns a list of all current enemy positions
         coords_to_avoid = []
-        curr = (self.x, self.y)
+        curr = (self.x, self.y, self.size)
         for x in Coord_List:
             if x != curr:
                 coords_to_avoid.append(x)
@@ -296,7 +296,7 @@ while running:
     
     for x in enemy_list:
         
-
+        print(x.coords_to_avoid())
         if randomize() == True:
             
             x.update()
@@ -306,7 +306,7 @@ while running:
     while length >0:
         curr = enemy_list[index]
         
-        Coord_List[index] =  (curr.x, curr.y)     
+        Coord_List[index] =  (curr.x, curr.y, curr.size)     
         
 
         screen.blit(curr.image, curr.rect)
