@@ -218,7 +218,13 @@ class Link:
     def update(self):
         
         #MOVEMENT
+        self.down = False
+        self.up = False
+        self.left = False
+        self.right = False
+        
         keys = pygame.key.get_pressed()
+<<<<<<< HEAD
         
         self.down = keys[pygame.K_DOWN]
         self.up = keys[pygame.K_UP] 
@@ -243,6 +249,19 @@ class Link:
             
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
+=======
+
+        self.down = keys[pygame.K_DOWN]
+        self.up = keys[pygame.K_UP] 
+        self.right = keys[pygame.K_RIGHT]
+        self.left = keys[pygame.K_LEFT] 
+
+        self.y += -player_speed * keys[pygame.K_UP] + player_speed * keys[pygame.K_DOWN]
+        self.x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
+            
+        self.rect.center = (self.x, self.y)
+        Links_Pos.append(self.rect.center)
+>>>>>>> f94d04733e6572bc13debafd16ae783a5e8ea5ea
 
 
 player = Link()
