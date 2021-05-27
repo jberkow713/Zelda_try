@@ -41,7 +41,8 @@ link = pygame.image.load("link.jpg").convert_alpha()
 link = pygame.transform.scale(link, (LINK_WIDTH, LINK_HEIGHT))
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
-ghost_list = []
+
+enemy_list = []
 
 class Ghost:
     def __init__(self,x,y):
@@ -58,11 +59,11 @@ class Ghost:
         self.movement = ['up', 'down', 'left', 'right']
         self.speed = 10
         self.aggressiveness = 3
-        
+        enemy_list.append(self)
         
     def update(self):
-        if Links_Pos[-1] != None:
-            Links_Position = Links_Pos[-1]
+        
+        Links_Position = Links_Pos[-1]
 
         distance_to_link = math.sqrt((Links_Position[0]-self.rect.center[0])**2 + (Links_Position[1]-self.rect.center[1])**2)
         #Want the enemy at this point, to calculate which direction will bring it closer to Link by the greatest amount
@@ -204,57 +205,45 @@ class Link:
         self.x = WIDTH/2
         self.y = HEIGHT/2
         self.image = link
+        self.width = 100
+        self.size = self.width
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
-        Links_Pos.append(self.rect.center)
         self.down = True #link faces down by default
         self.up = False
         self.left = False
         self.right = False
-        
+        Links_Pos.append(self.rect.center)
+
     def update(self):
         
         #MOVEMENT
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
-            self.y += player_speed
-            self.x += 0
-            self.down = True
-            self.up = False
-            self.left = False
-            self.right = False
+        
+        self.down = keys[pygame.K_DOWN]
+        self.up = keys[pygame.K_UP] 
+        self.right = keys[pygame.K_RIGHT]
+        self.left = keys[pygame.K_LEFT]
+        
+        #temp variables to test edge of screen
+        self.new_y = self.y
+        self.new_x = self.x
+
+        self.new_y += -player_speed * keys[pygame.K_UP] + player_speed * keys[pygame.K_DOWN]
+        self.new_x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
+        
+        if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+
+            self.x = self.new_x
+            self.y = self.new_y  
+            self.rect.center = (self.x, self.y)
+            Links_Pos.append(self.rect.center)
+        
+        else:
+            
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
 
-        if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
-            self.y -= player_speed
-            self.x += 0
-            self.down = False
-            self.up = True 
-            self.left = False
-            self.right = False
-            self.rect.center = (self.x, self.y)
-            Links_Pos.append(self.rect.center)
-
-        if keys[pygame.K_RIGHT] and not keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_LEFT]:
-            self.y += 0
-            self.x += player_speed
-            self.down = False
-            self.up = False
-            self.left = False
-            self.right = True
-            self.rect.center = (self.x, self.y)
-            Links_Pos.append(self.rect.center)
-
-        if keys[pygame.K_LEFT] and not keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT]:
-            self.y += 0
-            self.x -= player_speed
-            self.down = False
-            self.up = False
-            self.left = True 
-            self.right = False
-            self.rect.center = (self.x, self.y)
-            Links_Pos.append(self.rect.center)
 
 player = Link()
 
@@ -262,10 +251,7 @@ enemy1 = Ghost(250,250)
 enemy2 = Ghost(1250,250)
 enemy3 = Ghost(250,750)
 enemy4 = Ghost(1250,750)
-ghost_list.append(enemy1)
-ghost_list.append(enemy2)
-ghost_list.append(enemy3)
-ghost_list.append(enemy4)
+
 
 running = True
 while running:
@@ -277,14 +263,14 @@ while running:
         
         player.update()
         
-    for x in ghost_list:
+    for x in enemy_list:
         if randomize() == True:
    
             x.update()
     
     screen.fill(WHITE)
     screen.blit(player.image, player.rect)
-    for x in ghost_list:
+    for x in enemy_list:
 
         screen.blit(x.image, x.rect)
    
