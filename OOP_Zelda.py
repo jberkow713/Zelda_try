@@ -23,7 +23,6 @@ BLUE = (0,0,255)
 PURPLE = (255,0,255)
 Links_Pos = []
 
-
 player_speed = 11
 
 def randomize():
@@ -32,7 +31,6 @@ def randomize():
         return True
     else:
         return False      
-
 
 pygame.init()
 
@@ -51,25 +49,25 @@ class Ghost:
         self.starting_y = y
         self.x = x
         self.y = y
+        self.width = 100
         self.image = ghost
-        self.size = GHOST_WIDTH
+        self.size = self.width
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
         self.direction = None 
         self.movement = ['up', 'down', 'left', 'right']
         self.speed = 10
+        self.aggressiveness = 3
+        
         
     def update(self):
         if Links_Pos[-1] != None:
             Links_Position = Links_Pos[-1]
 
-        # print(Links_Position)
-        # print(self.rect.center)
         distance_to_link = math.sqrt((Links_Position[0]-self.rect.center[0])**2 + (Links_Position[1]-self.rect.center[1])**2)
         #Want the enemy at this point, to calculate which direction will bring it closer to Link by the greatest amount
         
-
-        if distance_to_link <500:
+        if distance_to_link <((WIDTH+HEIGHT) * .5) /self.aggressiveness:
             Attacking = True
         else:
             Attacking = False    
@@ -80,8 +78,7 @@ class Ghost:
             current = (self.x, self.y)
             
             for x in self.movement:
-                
-                
+                           
                 if x == 'up':
                     self.x = current[0]
                     self.y = current[1]
@@ -118,6 +115,7 @@ class Ghost:
                         distances.append((self.x, self.y))
                     else:
                         distances.append((10000,10000))
+                
                 if x == 'right':
                     self.x = current[0]
                     self.y = current[1]
@@ -130,8 +128,7 @@ class Ghost:
                         distances.append((self.x, self.y))
                     else:
                         distances.append((10000,10000))
-        
-            
+                    
             distance_to_link = []
             
             for x in distances: 
@@ -140,30 +137,15 @@ class Ghost:
                 distance_to_link.append(distance)
 
             closest_dict = dict(zip(distances, distance_to_link))
-            
-            #{(580.0, 840.0): 340.91787867461574, (10000, 10000): 13396.1944222977, (550.0, 870.0): 370.0337822415678, (610.0, 870.0): 374.0655022853618}
-            
-            dist = []
-            for v in closest_dict.values():
-                dist.append(v)
-            a = min(dist)
-            
+            closest = min(closest_dict, key=closest_dict.get)
 
-            for k,v in closest_dict.items():
-                if v == a:
-                    print(k)
-                    
-                    coord = k
-                    self.x = coord[0]
-                    self.y = coord[1]
-                    self.rect.center = (self.x, self.y)
-                    
-
-
+            self.x = closest[0]
+            self.y = closest[1]
+            self.rect.center = (self.x, self.y)
+        
         if Attacking == False:
                 
             self.direction = self.movement[random.randint(0, len(self.movement)-1)]
-
 
             if self.direction == 'up':
                 
@@ -216,21 +198,6 @@ class Ghost:
                     self.y += 0
                     self.x -= self.speed 
                     self.rect.center = (self.x, self.y) 
-        
-        
-
-                        
-
-            
-            
-
-
-
-
-
-        
-                    
-
 
 class Link:
     def __init__(self):
@@ -244,13 +211,7 @@ class Link:
         self.up = False
         self.left = False
         self.right = False
-        global Links_Position
         
-
-        
-
-        
-
     def update(self):
         
         #MOVEMENT
@@ -264,9 +225,6 @@ class Link:
             self.right = False
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
-            
-            
-            
 
         if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
             self.y -= player_speed
@@ -277,7 +235,6 @@ class Link:
             self.right = False
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
-            
 
         if keys[pygame.K_RIGHT] and not keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_LEFT]:
             self.y += 0
@@ -288,7 +245,6 @@ class Link:
             self.right = True
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
-            
 
         if keys[pygame.K_LEFT] and not keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT]:
             self.y += 0
@@ -299,8 +255,6 @@ class Link:
             self.right = False
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
-            
-
 
 player = Link()
 
@@ -327,14 +281,12 @@ while running:
         if randomize() == True:
    
             x.update()
-       
     
     screen.fill(WHITE)
     screen.blit(player.image, player.rect)
     for x in ghost_list:
 
         screen.blit(x.image, x.rect)
-        
-    
+   
     pygame.display.flip()
 
