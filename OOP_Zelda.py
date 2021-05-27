@@ -41,7 +41,9 @@ link = pygame.image.load("link.jpg").convert_alpha()
 link = pygame.transform.scale(link, (LINK_WIDTH, LINK_HEIGHT))
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
-
+#list for enemy collision checking
+Coord_List = []
+#list for enemy movement
 enemy_list = []
 
 class Ghost:
@@ -60,9 +62,22 @@ class Ghost:
         self.speed = 10
         self.aggressiveness = 3
         enemy_list.append(self)
+        Coord_List.append((self.x, self.y))
+        
+        
+    def coords_to_avoid(self):
+        #This returns a list of all current enemy positions
+        coords_to_avoid = []
+        curr = (self.x, self.y)
+        for x in Coord_List:
+            if x != curr:
+                coords_to_avoid.append(x)
+        return coords_to_avoid        
         
     def update(self):
-        
+        #TODO, we need to take the list of current enemy positions found in To_Avoid, and make sure that the movement does not 
+        #overlap ANY of these positions, while attacking, or while not attacking
+        To_Avoid = self.coords_to_avoid()
         Links_Position = Links_Pos[-1]
 
         distance_to_link = math.sqrt((Links_Position[0]-self.rect.center[0])**2 + (Links_Position[1]-self.rect.center[1])**2)
@@ -143,6 +158,7 @@ class Ghost:
             self.x = closest[0]
             self.y = closest[1]
             self.rect.center = (self.x, self.y)
+
         
         if Attacking == False:
                 
@@ -199,6 +215,10 @@ class Ghost:
                     self.y += 0
                     self.x -= self.speed 
                     self.rect.center = (self.x, self.y) 
+        
+        
+
+
 
 class Link:
     def __init__(self):
@@ -269,16 +289,30 @@ while running:
         
         player.update()
         
-    for x in enemy_list:
-        if randomize() == True:
-   
-            x.update()
+    
     
     screen.fill(WHITE)
     screen.blit(player.image, player.rect)
+    
     for x in enemy_list:
+        
 
-        screen.blit(x.image, x.rect)
-   
+        if randomize() == True:
+            
+            x.update()
+
+    length = len(enemy_list)
+    index = 0
+    while length >0:
+        curr = enemy_list[index]
+        
+        Coord_List[index] =  (curr.x, curr.y)     
+        
+
+        screen.blit(curr.image, curr.rect)
+        index +=1
+        length -=1    
+    
+
     pygame.display.flip()
 
