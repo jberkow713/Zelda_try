@@ -46,14 +46,14 @@ Coord_List = []
 #list for enemy movement
 enemy_list = []
 
-class Ghost:
-    def __init__(self,x,y):
+class Enemy:
+    def __init__(self,x,y, image):
         self.starting_x = x
         self.starting_y = y
         self.x = x
         self.y = y
         self.width = 100
-        self.image = ghost
+        self.image = image 
         self.size = self.width
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
@@ -349,12 +349,12 @@ class Link:
 
 player = Link()
 
-enemy1 = Ghost(250,250)
-enemy2 = Ghost(1250,250)
-enemy3 = Ghost(250,750)
-enemy4 = Ghost(1250,750)
-enemy5 = Ghost(1000, 250)
-enemy6 = Ghost(1000, 500)
+enemy1 = Enemy(250,250, ghost)
+enemy2 = Enemy(1250,250,ghost)
+enemy3 = Enemy(250,750,ghost)
+enemy4 = Enemy(1250,750,ghost)
+enemy5 = Enemy(1000, 250,ghost)
+enemy6 = Enemy(1000, 500,ghost)
 
 running = True
 while running:
