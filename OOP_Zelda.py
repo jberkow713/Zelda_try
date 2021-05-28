@@ -196,12 +196,16 @@ class Ghost:
                 distance_to_link.append(distance)
 
             closest_dict = dict(zip(distances, distance_to_link))
-            
-            closest = min(closest_dict, key=closest_dict.get)
+            if len(closest_dict)>0:
 
-            self.x = closest[0]
-            self.y = closest[1]
-            self.rect.center = (self.x, self.y)
+                closest = min(closest_dict, key=closest_dict.get)
+
+                self.x = closest[0]
+                self.y = closest[1]
+                self.rect.center = (self.x, self.y)
+            else:
+                self.rect.center = (self.x, self.y)
+
 
         
         if Attacking == False:
@@ -349,7 +353,8 @@ enemy1 = Ghost(250,250)
 enemy2 = Ghost(1250,250)
 enemy3 = Ghost(250,750)
 enemy4 = Ghost(1250,750)
-
+enemy5 = Ghost(1000, 250)
+enemy6 = Ghost(1000, 500)
 
 running = True
 while running:
