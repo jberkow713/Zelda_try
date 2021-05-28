@@ -203,7 +203,7 @@ class Ghost:
                 self.x = closest[0]
                 self.y = closest[1]
                 self.rect.center = (self.x, self.y)
-            else:
+            if len(closest_dict)==0:
                 self.rect.center = (self.x, self.y)
 
 
