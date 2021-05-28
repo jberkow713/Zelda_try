@@ -65,19 +65,41 @@ class Ghost:
         Coord_List.append((self.x, self.y))
         
         
-    def coords_to_avoid(self):
-        #This returns a list of all current enemy positions
-        coords_to_avoid = []
-        curr = (self.x, self.y, self.size)
+    def coords_to_avoid(self, coord):
+        #Start with a list of all other enemies, and eventually objects,  that exist on the map
+        
+        #coord will represent the coordinate we want to check, a tuple of an x and y value
+        COORD_List = []
+        curr = (self.x, self.y, self.size/2)
+        
         for x in Coord_List:
             if x != curr:
-                coords_to_avoid.append(x)
-        return coords_to_avoid        
+                COORD_List.append(x)
+        print(COORD_List)        
+        for x in COORD_List:
+            x_range = []
+            y_range = []
+            left_x = x[0] - x[2]
+            right_x = x[0] + x[2]
+            high_y = x[1] - x[2]
+            low_y = x[1] + x[2]
+            x_range.append(left_x)
+            x_range.append(right_x)
+            y_range.append(high_y)
+            y_range.append(low_y)
+            
+
+            if coord[0] >=x_range[0] and coord[0] <= x_range[1]:
+                if coord[1] >= y_range[0] and coord[1] <= y_range[1]:
+                    return True 
+        
+        return False
+               
         
     def update(self):
         #TODO, we need to take the list of current enemy positions found in To_Avoid, and make sure that the movement does not 
         #overlap ANY of these positions, while attacking, or while not attacking
-        To_Avoid = self.coords_to_avoid()
+        
         Links_Position = Links_Pos[-1]
 
         distance_to_link = math.sqrt((Links_Position[0]-self.rect.center[0])**2 + (Links_Position[1]-self.rect.center[1])**2)
@@ -91,57 +113,76 @@ class Ghost:
         
         if Attacking == True:
             distances = []    
-            current = (self.x, self.y)
+            
             
             for x in self.movement:
                            
                 if x == 'up':
-                    self.x = current[0]
-                    self.y = current[1]
 
-                    self.y -= self.speed
-                    self.x += 0
-                    if self.y < HEIGHT-self.size and self.y >0+self.size and self.x < WIDTH - self.size and self.x >0 + self.size:
-                        
-                        distances.append((self.x, self.y))
+                    current_x = self.x
+                    current_y = self.y                    
+                    
+
+                    current_y -= self.speed
+                    current_x += 0
+                    if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                        if self.coords_to_avoid((current_x, current_y)) == False:
+
+                            
+                     
+                            distances.append((current_x , current_y))
                     else:
                         distances.append((10000,10000))    
                 
                 if x == 'down':
-                    self.x = current[0]
-                    self.y = current[1]
+                    current_x = self.x
+                    current_y = self.y 
 
-                    self.y += self.speed
-                    self.x +=0
+                    current_y += self.speed
+                    current_x +=0
 
-                    if self.y < HEIGHT-self.size and self.y >0+self.size and self.x < WIDTH - self.size and self.x >0 + self.size:
+                    if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                        if self.coords_to_avoid((current_x, current_y)) == False:
+
+                                                       
                         
-                        distances.append((self.x, self.y))
+                            distances.append((current_x , current_y))
+                        
+                        
                     else:
                         distances.append((10000,10000))
 
                 if x == 'left':
-                    self.x = current[0]
-                    self.y = current[1]
+                    current_x = self.x
+                    current_y = self.y 
 
-                    self.y +=0
-                    self.x -= self.speed
-                    if self.y < HEIGHT-self.size and self.y >0+self.size and self.x < WIDTH - self.size and self.x >0 + self.size:
+                    current_y +=0
+                    current_x-= self.speed
+                    if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                        if self.coords_to_avoid((current_x, current_y)) == False:
 
-                        distances.append((self.x, self.y))
+                                                       
+                        
+                            distances.append((current_x , current_y))
+
+                        
                     else:
                         distances.append((10000,10000))
                 
                 if x == 'right':
-                    self.x = current[0]
-                    self.y = current[1]
+                    current_x = self.x
+                    current_y = self.y 
 
-                    self.y +=0
-                    self.x += self.speed
+                    current_y +=0
+                    current_x += self.speed
                     
-                    if self.y < HEIGHT-self.size and self.y >0+self.size and self.x < WIDTH - self.size and self.x >0 + self.size:
+                    if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                        if self.coords_to_avoid((current_x, current_y)) == False:
 
-                        distances.append((self.x, self.y))
+                                                        
+                        
+                            distances.append((current_x , current_y))
+                        
                     else:
                         distances.append((10000,10000))
                     
@@ -153,6 +194,7 @@ class Ghost:
                 distance_to_link.append(distance)
 
             closest_dict = dict(zip(distances, distance_to_link))
+            
             closest = min(closest_dict, key=closest_dict.get)
 
             self.x = closest[0]
@@ -165,12 +207,19 @@ class Ghost:
             self.direction = self.movement[random.randint(0, len(self.movement)-1)]
 
             if self.direction == 'up':
+                current_x = self.x
+                current_y = self.y
+                current_y -= self.speed
+                current_x +=0
+
                 
-                self.y -= self.speed
-                self.x += 0
-                if self.y < HEIGHT-self.size and self.y >0+self.size and self.x < WIDTH - self.size and self.x >0 + self.size:
-                    
-                    self.rect.center = (self.x, self.y)
+                if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                    if self.coords_to_avoid((current_x, current_y)) == False:
+
+                        self.x = current_x
+                        self.y = current_y 
+                                            
+                        self.rect.center = (self.x, self.y)
                 
                 else:
 
@@ -181,11 +230,18 @@ class Ghost:
                     
 
             if self.direction == 'down':
-                self.y += self.speed
-                self.x +=0
+                current_x = self.x
+                current_y = self.y
+                current_y += self.speed
+                current_x +=0
 
-                if self.y < HEIGHT-self.size and self.y >0+self.size and self.x < WIDTH - self.size and self.x >0 + self.size:
-                    self.rect.center = (self.x, self.y)
+                if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                    if self.coords_to_avoid((current_x, current_y)) == False:
+
+                        self.x = current_x
+                        self.y = current_y 
+
+                        self.rect.center = (self.x, self.y)
                 else:
 
                     self.y -= self.speed
@@ -194,22 +250,36 @@ class Ghost:
                     
 
             if self.direction == 'left':
-                self.y +=0
-                self.x -= self.speed
-                if self.y < HEIGHT-self.size and self.y >0+self.size and self.x < WIDTH - self.size and self.x >0 + self.size:
+                current_x = self.x
+                current_y = self.y
+                current_y +=0
+                current_x -= self.speed
+                
+                if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                    if self.coords_to_avoid((current_x, current_y)) == False:
 
-                    self.rect.center = (self.x, self.y)
+                        self.x = current_x
+                        self.y = current_y 
+
+                        self.rect.center = (self.x, self.y)
                 else:
                     self.y += 0
                     self.x += self.speed 
                     self.rect.center = (self.x, self.y) 
                         
             if self.direction == 'right':
-                self.y +=0
-                self.x += self.speed
-                if self.y < HEIGHT-self.size and self.y >0+self.size and self.x < WIDTH - self.size and self.x >0 + self.size:
+                current_x = self.x
+                current_y = self.y
+                current_y +=0
+                current_x += self.speed
+                
+                if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                    if self.coords_to_avoid((current_x, current_y)) == False:
 
-                    self.rect.center = (self.x, self.y)
+                        self.x = current_x
+                        self.y = current_y 
+                                                
+                        self.rect.center = (self.x, self.y)
                 else:
                     
                     self.y += 0
@@ -294,24 +364,35 @@ while running:
     screen.fill(WHITE)
     screen.blit(player.image, player.rect)
     
-    for x in enemy_list:
+    # index =0 
+    # for x in enemy_list:
+    #     curr = enemy_list[index]
+
+    #     Coord_List.append ((curr.x, curr.y, curr.size/2))     
         
-        print(x.coords_to_avoid())
-        if randomize() == True:
-            
-            x.update()
+    #     index +=1
+
+    # print(Coord_List)     
+
 
     length = len(enemy_list)
     index = 0
     while length >0:
         curr = enemy_list[index]
         
-        Coord_List[index] =  (curr.x, curr.y, curr.size)     
+        Coord_List[index] =  (curr.x, curr.y, curr.size/2)     
         
-
-        screen.blit(curr.image, curr.rect)
+        
         index +=1
         length -=1    
+    
+    for x in enemy_list:
+                
+        if randomize() == True:
+            
+            x.update()
+
+        screen.blit(x.image, x.rect)
     
 
     pygame.display.flip()
