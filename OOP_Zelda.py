@@ -91,8 +91,8 @@ class Ghost:
             y_range.append(low_y)
             
 
-            if coord[0] >=x_range[0] and coord[0] <= x_range[1]:
-                if coord[1] >= y_range[0] and coord[1] <= y_range[1]:
+            if coord[0] >=x_range[0]-(.25*self.size) and coord[0] <= x_range[1]+(.25*self.size):
+                if coord[1] >= y_range[0]-(.25*self.size) and coord[1] <= y_range[1]+(.25*self.size):
                     return True 
         
         return False
