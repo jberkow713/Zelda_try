@@ -48,23 +48,29 @@ enemy_list = []
 
 class Enemy:
     def __init__(self,x,y, image):
-        self.starting_x = x
-        self.starting_y = y
+        
         self.x = x
         self.y = y
-        self.width = 100
+        self.invisible = False
+        self.create_stats()
+        self.size = 100
         self.image = image 
-        self.size = self.width
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
         self.direction = None 
         self.movement = ['up', 'down', 'left', 'right']
-        self.speed = 10
-        self.aggressiveness = 3
-        self.invisible = False
         enemy_list.append(self)
         Coord_List.append((self.x, self.y))
         
+
+    def create_stats(self):
+        
+        self.speed = random.randint(8,15)
+        self.aggressiveness = random.randint(2,5)
+        invis_roll = random.randint(0,10)
+        if invis_roll > 7:
+            self.invisible = True 
+
         
     def coords_to_avoid(self, coord):
         #Start with a list of all other enemies, and eventually objects,  that exist on the map
@@ -115,8 +121,7 @@ class Enemy:
         
         if Attacking == True:
             distances = []    
-            
-            
+           
             for x in self.movement:
                            
                 if x == 'up':
@@ -129,9 +134,7 @@ class Enemy:
                     current_x += 0
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
-
-                            
-                     
+            
                             distances.append((current_x , current_y))
                     else:
                         distances.append((10000,10000))    
@@ -145,13 +148,11 @@ class Enemy:
 
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
-
-                                                       
-                        
+               
                             distances.append((current_x , current_y))
-                        
-                        
+                
                     else:
+
                         distances.append((10000,10000))
 
                 if x == 'left':
@@ -162,13 +163,11 @@ class Enemy:
                     current_x-= self.speed
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
-
-                                                       
-                        
+                            
                             distances.append((current_x , current_y))
-
                         
                     else:
+                        
                         distances.append((10000,10000))
                 
                 if x == 'right':
@@ -180,12 +179,11 @@ class Enemy:
                     
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
-
-                                                        
-                        
+                
                             distances.append((current_x , current_y))
                         
                     else:
+
                         distances.append((10000,10000))
                     
             distance_to_link = []
@@ -205,8 +203,6 @@ class Enemy:
                 self.rect.center = (self.x, self.y)
             if len(closest_dict)==0:
                 self.rect.center = (self.x, self.y)
-
-
         
         if Attacking == False:
                 
@@ -217,7 +213,6 @@ class Enemy:
                 current_y = self.y
                 current_y -= self.speed
                 current_x +=0
-
                 
                 if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                     if self.coords_to_avoid((current_x, current_y)) == False:
@@ -232,7 +227,6 @@ class Enemy:
                     self.y += self.speed
                     self.x +=0
                     self.rect.center = (self.x, self.y) 
-                    
                     
 
             if self.direction == 'down':
@@ -291,10 +285,6 @@ class Enemy:
                     self.y += 0
                     self.x -= self.speed 
                     self.rect.center = (self.x, self.y) 
-        
-        
-
-
 
 class Link:
     def __init__(self):
@@ -346,7 +336,6 @@ class Link:
             Links_Pos.append(self.rect.center)
 
 
-
 player = Link()
 
 enemy1 = Enemy(250,250, ghost)
@@ -365,14 +354,11 @@ while running:
     if event.type == pygame.KEYDOWN:
         
         player.update()
-        
-    
+       
     
     screen.fill(WHITE)
     screen.blit(player.image, player.rect)
     
-    
-
     length = len(enemy_list)
     index = 0
     while length >0:
