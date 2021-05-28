@@ -61,13 +61,15 @@ class Ghost:
         self.movement = ['up', 'down', 'left', 'right']
         self.speed = 10
         self.aggressiveness = 3
+        self.invisible = False
         enemy_list.append(self)
         Coord_List.append((self.x, self.y))
         
         
     def coords_to_avoid(self, coord):
         #Start with a list of all other enemies, and eventually objects,  that exist on the map
-        
+        if self.invisible == True:
+            return False
         #coord will represent the coordinate we want to check, a tuple of an x and y value
         COORD_List = []
         curr = (self.x, self.y, self.size/2)
@@ -75,7 +77,7 @@ class Ghost:
         for x in Coord_List:
             if x != curr:
                 COORD_List.append(x)
-        print(COORD_List)        
+               
         for x in COORD_List:
             x_range = []
             y_range = []
@@ -364,16 +366,7 @@ while running:
     screen.fill(WHITE)
     screen.blit(player.image, player.rect)
     
-    # index =0 
-    # for x in enemy_list:
-    #     curr = enemy_list[index]
-
-    #     Coord_List.append ((curr.x, curr.y, curr.size/2))     
-        
-    #     index +=1
-
-    # print(Coord_List)     
-
+    
 
     length = len(enemy_list)
     index = 0
