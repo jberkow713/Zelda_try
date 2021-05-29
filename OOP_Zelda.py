@@ -62,6 +62,7 @@ class OBJECT:
         self.y = y
         self.size = size 
         self.image = image
+        # We set image so it ignores background of white
         self.image.set_colorkey(WHITE) 
         self.rescale()
         self.rect = self.image.get_rect()
@@ -440,9 +441,7 @@ while running:
       
     
     screen.fill(GROUND_COLOR)
-    
-    screen.blit(player.image, player.rect)
-    
+           
     Object_Coords[0] = (player.x, player.y, player.size/2)
     
 
@@ -456,6 +455,8 @@ while running:
         
         index +=1
         length -=1    
+    
+    screen.blit(player.image, player.rect)
     
     for x in enemy_list:
                 
