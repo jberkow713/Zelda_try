@@ -41,10 +41,36 @@ link = pygame.image.load("link.jpg").convert_alpha()
 link = pygame.transform.scale(link, (LINK_WIDTH, LINK_HEIGHT))
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
+
+Tree = pygame.image.load('Oak Tree.jpg').convert_alpha()
+Mountain = pygame.image.load('Mountain.jpg').convert_alpha()
 #list for enemy collision checking
 Coord_List = []
+Object_Coords = []
 #list for enemy movement
 enemy_list = []
+object_list = []
+
+
+
+class OBJECT:
+    def __init__(self, x, y, image, size):
+        self.x = x
+        self.y = y
+        self.size = size 
+        self.image = image
+        self.rescale()
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.x, self.y)
+        
+
+    def rescale(self):
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        Object_Coords.append((self.x, self.y, self.size/2))
+        object_list.append(self)
+
+
+
 
 class Enemy:
     def __init__(self,x,y, image):
@@ -79,8 +105,8 @@ class Enemy:
         #coord will represent the coordinate we want to check, a tuple of an x and y value
         COORD_List = []
         curr = (self.x, self.y, self.size/2)
-        
-        for x in Coord_List:
+        Big_List = Coord_List + Object_Coords
+        for x in Big_List:
             if x != curr:
                 COORD_List.append(x)
                
@@ -97,8 +123,8 @@ class Enemy:
             y_range.append(low_y)
             
 
-            if coord[0] >=x_range[0]-(.25*self.size) and coord[0] <= x_range[1]+(.25*self.size):
-                if coord[1] >= y_range[0]-(.25*self.size) and coord[1] <= y_range[1]+(.25*self.size):
+            if coord[0] >=x_range[0]-(.3*self.size) and coord[0] <= x_range[1]+(.3*self.size):
+                if coord[1] >= y_range[0]-(.3*self.size) and coord[1] <= y_range[1]+(.3*self.size):
                     return True 
         
         return False
@@ -300,6 +326,39 @@ class Link:
         self.left = False
         self.right = False
         Links_Pos.append(self.rect.center)
+        Object_Coords.append((self.x, self.y))
+    
+    def coords_to_avoid(self, coord):
+        
+        
+        COORD_List = []
+
+        curr = (self.x, self.y, self.size/2)
+        
+
+        for x in Object_Coords:
+            if x != curr:
+                COORD_List.append(x)
+
+
+        for x in COORD_List:
+            x_range = []
+            y_range = []
+            left_x = x[0] - x[2]
+            right_x = x[0] + x[2]
+            high_y = x[1] - x[2]
+            low_y = x[1] + x[2]
+            x_range.append(left_x)
+            x_range.append(right_x)
+            y_range.append(high_y)
+            y_range.append(low_y)
+            
+
+            if coord[0] >=x_range[0]-(.3*self.size) and coord[0] <= x_range[1]+(.3*self.size):
+                if coord[1] >= y_range[0]-(.3*self.size) and coord[1] <= y_range[1]+(.3*self.size):
+                    return True 
+        
+        return False
 
     def update(self):
         
@@ -324,11 +383,14 @@ class Link:
         self.new_x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
         
         if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+            if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
-            self.x = self.new_x
-            self.y = self.new_y  
-            self.rect.center = (self.x, self.y)
-            Links_Pos.append(self.rect.center)
+            #test here for collision with objects, not monsters
+
+                self.x = self.new_x
+                self.y = self.new_y  
+                self.rect.center = (self.x, self.y)
+                Links_Pos.append(self.rect.center)
         
         else:
             
@@ -344,6 +406,13 @@ enemy3 = Enemy(250,750,ghost)
 enemy4 = Enemy(1250,750,ghost)
 enemy5 = Enemy(1000, 250,ghost)
 enemy6 = Enemy(1000, 500,ghost)
+Tree1 = OBJECT(500,500, Tree, 50)
+Tree2 = OBJECT(550,500, Tree, 50)
+Tree3 = OBJECT(605,555, Tree, 50)
+Tree4 = OBJECT(625,355, Mountain, 50)
+Tree5 = OBJECT(50,50, Mountain, 150)
+Tree6 = OBJECT(900,900, Mountain, 150)
+
 
 running = True
 while running:
@@ -354,11 +423,15 @@ while running:
     if event.type == pygame.KEYDOWN:
         
         player.update()
-       
+
+      
     
     screen.fill(WHITE)
     screen.blit(player.image, player.rect)
     
+    Object_Coords[0] = (player.x, player.y, player.size/2)
+    
+
     length = len(enemy_list)
     index = 0
     while length >0:
@@ -377,7 +450,9 @@ while running:
             x.update()
 
         screen.blit(x.image, x.rect)
-    
+    for x in object_list:
+        screen.blit(x.image, x.rect)
+
 
     pygame.display.flip()
 
