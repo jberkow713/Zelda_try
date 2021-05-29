@@ -45,8 +45,8 @@ link = pygame.transform.scale(link, (LINK_WIDTH, LINK_HEIGHT))
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
 
-Tree = pygame.image.load('Oak Tree.jpg').convert_alpha()
-Mountain = pygame.image.load('Mountain.jpg').convert_alpha()
+Tree = pygame.image.load('TREE_PNG.png')
+Mountain = pygame.image.load('MOUNTAIN_PNG.png')
 #list for enemy collision checking
 Coord_List = []
 Object_Coords = []
@@ -62,6 +62,7 @@ class OBJECT:
         self.y = y
         self.size = size 
         self.image = image
+        self.image.set_colorkey(WHITE) 
         self.rescale()
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
@@ -83,7 +84,7 @@ class Enemy:
         self.invisible = False
         self.create_stats()
         self.size = 100
-        self.image = image 
+        self.image = image
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
         self.direction = None 
@@ -223,9 +224,12 @@ class Enemy:
                 distance_to_link.append(distance)
 
             closest_dict = dict(zip(distances, distance_to_link))
+            if len(closest_dict)==0:
+                self.rect.center = (self.x, self.y)
             if len(closest_dict)>0:
 
                 closest = min(closest_dict, key=closest_dict.get)
+                #puts enemy back in original spot if there are no possible moves to make, instead of putting it off map
                 if closest[0] == 10000:
                     self.rect.center = (self.x, self.y)
 
@@ -236,9 +240,7 @@ class Enemy:
                     self.y = closest[1]
 
                     self.rect.center = (self.x, self.y)
-            
-            if len(closest_dict)==0:
-                self.rect.center = (self.x, self.y)
+                       
         
         if Attacking == False:
                 
@@ -327,6 +329,7 @@ class Link:
         self.x = WIDTH/2
         self.y = HEIGHT/2
         self.image = link
+        self.image.set_colorkey(WHITE) 
         self.width = 100
         self.size = self.width
         self.rect = self.image.get_rect()
@@ -437,7 +440,7 @@ while running:
       
     
     screen.fill(GROUND_COLOR)
-    screen.set_colorkey(WHITE)
+    
     screen.blit(player.image, player.rect)
     
     Object_Coords[0] = (player.x, player.y, player.size/2)
