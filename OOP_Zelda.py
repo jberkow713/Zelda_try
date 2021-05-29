@@ -105,9 +105,9 @@ class Enemy:
         
     def coords_to_avoid(self, coord):
         #Start with a list of all other enemies, and eventually objects,  that exist on the map
-        if self.invisible == True:
-            return False
-        #coord will represent the coordinate we want to check, a tuple of an x and y value
+        # if self.invisible == True:
+        #     return False
+        
         COORD_List = []
         curr = (self.x, self.y, self.size/2)
         Big_List = Coord_List + Object_Coords
@@ -349,8 +349,10 @@ class Link:
 
         curr = (self.x, self.y, self.size/2)
         
+        Big_List = Coord_List + Object_Coords
+        for x in Big_List:
 
-        for x in Object_Coords:
+        # for x in Object_Coords:
             if x != curr:
                 COORD_List.append(x)
 
@@ -377,17 +379,14 @@ class Link:
     def update(self):
         
         #MOVEMENT
-        self.down = False
-        self.up = False
-        self.left = False
-        self.right = False
+        
         
         keys = pygame.key.get_pressed()
         
-        self.down = keys[pygame.K_DOWN]
-        self.up = keys[pygame.K_UP] 
-        self.right = keys[pygame.K_RIGHT]
-        self.left = keys[pygame.K_LEFT]
+        # self.down = keys[pygame.K_DOWN]
+        # self.up = keys[pygame.K_UP] 
+        # self.right = keys[pygame.K_RIGHT]
+        # self.left = keys[pygame.K_LEFT]
         
         #temp variables to test edge of screen
         self.new_y = self.y
@@ -396,20 +395,94 @@ class Link:
         self.new_y += -player_speed * keys[pygame.K_UP] + player_speed * keys[pygame.K_DOWN]
         self.new_x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
         
-        if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
-            if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+        if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
+            self.new_y -= player_speed
+            self.new_x +=0
 
-            #test here for collision with objects, not monsters
 
-                self.x = self.new_x
-                self.y = self.new_y  
+            if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+
+                    self.x = self.new_x
+                    self.y = self.new_y  
+                    self.rect.center = (self.x, self.y)
+                    Links_Pos.append(self.rect.center)
+                    self.up = True
+                    self.down = False
+                    self.right = False
+                    self.left = False    
+        
+            else:
+                
+                self.rect.center = (self.x, self.y)
+                Links_Pos.append(self.rect.center)
+        if keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
+
+            self.new_y += player_speed
+            self.new_x +=0
+            if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+
+                    self.x = self.new_x
+                    self.y = self.new_y  
+                    self.rect.center = (self.x, self.y)
+                    Links_Pos.append(self.rect.center)
+                    self.down = True
+                    self.up = False
+                    self.right = False
+                    self.left = False    
+        
+            else:
+                
                 self.rect.center = (self.x, self.y)
                 Links_Pos.append(self.rect.center)
         
-        else:
+        if keys[pygame.K_RIGHT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT]:
+
+            self.new_x += player_speed
+            self.new_y +=0
             
-            self.rect.center = (self.x, self.y)
-            Links_Pos.append(self.rect.center)
+            if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+
+                    self.x = self.new_x
+                    self.y = self.new_y  
+                    self.rect.center = (self.x, self.y)
+                    Links_Pos.append(self.rect.center)
+                    self.down = False
+                    self.up = False
+                    self.right = True
+                    self.left = False    
+        
+            else:
+                
+                self.rect.center = (self.x, self.y)
+                Links_Pos.append(self.rect.center)
+
+        if keys[pygame.K_LEFT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT]:
+
+            self.new_x -= player_speed
+            self.new_y +=0
+            
+            if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+
+                    self.x = self.new_x
+                    self.y = self.new_y  
+                    self.rect.center = (self.x, self.y)
+                    Links_Pos.append(self.rect.center)
+                    self.down = False
+                    self.up = False
+                    self.right = False
+                    self.left = True    
+        
+            else:
+                
+                self.rect.center = (self.x, self.y)
+                Links_Pos.append(self.rect.center)
+
+
+
 
 
 player = Link()
