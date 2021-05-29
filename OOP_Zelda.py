@@ -54,7 +54,7 @@ Object_Coords = []
 enemy_list = []
 object_list = []
 
-
+#TODO IMPLEMENT ATTACKING, need 4 photos of link and sword, trigger certain photos baed on if self is up, down , left, right
 
 class OBJECT:
     def __init__(self, x, y, image, size):
@@ -383,12 +383,7 @@ class Link:
         
         keys = pygame.key.get_pressed()
         
-        # self.down = keys[pygame.K_DOWN]
-        # self.up = keys[pygame.K_UP] 
-        # self.right = keys[pygame.K_RIGHT]
-        # self.left = keys[pygame.K_LEFT]
         
-        #temp variables to test edge of screen
         self.new_y = self.y
         self.new_x = self.x
 
