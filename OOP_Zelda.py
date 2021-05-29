@@ -38,6 +38,9 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("The Legend of Zelda")
 link = pygame.image.load("link.jpg").convert_alpha()
+
+
+
 link = pygame.transform.scale(link, (LINK_WIDTH, LINK_HEIGHT))
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
@@ -223,10 +226,17 @@ class Enemy:
             if len(closest_dict)>0:
 
                 closest = min(closest_dict, key=closest_dict.get)
+                if closest[0] == 10000:
+                    self.rect.center = (self.x, self.y)
 
-                self.x = closest[0]
-                self.y = closest[1]
-                self.rect.center = (self.x, self.y)
+                else:
+
+
+                    self.x = closest[0]
+                    self.y = closest[1]
+
+                    self.rect.center = (self.x, self.y)
+            
             if len(closest_dict)==0:
                 self.rect.center = (self.x, self.y)
         
@@ -426,7 +436,8 @@ while running:
 
       
     
-    screen.fill(WHITE)
+    screen.fill(GROUND_COLOR)
+    screen.set_colorkey(WHITE)
     screen.blit(player.image, player.rect)
     
     Object_Coords[0] = (player.x, player.y, player.size/2)
@@ -450,9 +461,10 @@ while running:
             x.update()
 
         screen.blit(x.image, x.rect)
+    
     for x in object_list:
         screen.blit(x.image, x.rect)
-
+    
 
     pygame.display.flip()
 
