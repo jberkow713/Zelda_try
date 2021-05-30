@@ -23,7 +23,7 @@ BLUE = (0,0,255)
 PURPLE = (255,0,255)
 Links_Pos = []
 
-player_speed = 11
+player_speed = 4
 
 def randomize():
     num = random.randint(0,10)
@@ -96,7 +96,7 @@ class Enemy:
 
     def create_stats(self):
         
-        self.speed = random.randint(8,15)
+        self.speed = random.randint(5,7)
         self.aggressiveness = random.randint(2,5)
         invis_roll = random.randint(0,10)
         if invis_roll > 7:
@@ -330,11 +330,16 @@ class Link:
         self.x = WIDTH/2
         self.y = HEIGHT/2
         self.image = link
-        self.image.set_colorkey(WHITE) 
+        self.image.set_colorkey(WHITE)
+        self.invincible = False
+        self.invincible_animation_count = 0
+        self.stunned_animation_count = 0 
+        self.stunned = False 
         self.width = 100
         self.size = self.width
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
+        self.health = 6
         self.down = True #link faces down by default
         self.up = False
         self.left = False
@@ -344,20 +349,22 @@ class Link:
     
     def coords_to_avoid(self, coord):
         
-        
-        COORD_List = []
+                
+        Enemy_COORD_List = []
+        Object_Coord_List = []
 
         curr = (self.x, self.y, self.size/2)
         
-        Big_List = Coord_List + Object_Coords
-        for x in Big_List:
-
-        # for x in Object_Coords:
+        
+        for x in Coord_List:
+            Enemy_COORD_List.append(x)
+        
+        for x in Object_Coords:
             if x != curr:
-                COORD_List.append(x)
+                Object_Coord_List.append(x)
 
 
-        for x in COORD_List:
+        for x in Object_Coord_List:
             x_range = []
             y_range = []
             left_x = x[0] - x[2]
@@ -374,107 +381,403 @@ class Link:
                 if coord[1] >= y_range[0]-(.3*self.size) and coord[1] <= y_range[1]+(.3*self.size):
                     return True 
         
+        for x in Enemy_COORD_List:
+            x_range = []
+            y_range = []
+            left_x = x[0] - x[2]
+            right_x = x[0] + x[2]
+            high_y = x[1] - x[2]
+            low_y = x[1] + x[2]
+            x_range.append(left_x)
+            x_range.append(right_x)
+            y_range.append(high_y)
+            y_range.append(low_y)
+            
+
+            if coord[0] >=x_range[0]-(.3*self.size) and coord[0] <= x_range[1]+(.3*self.size):
+                if coord[1] >= y_range[0]-(.3*self.size) and coord[1] <= y_range[1]+(.3*self.size):
+                    if self.invincible == False:
+                        return 99
+                                                                                                                         
+                     
+
         return False
 
     def update(self):
         
         #MOVEMENT
         
-        
-        keys = pygame.key.get_pressed()
-        
-        
-        self.new_y = self.y
-        self.new_x = self.x
+               
+        # print(self.invincible)
+                          
 
-        self.new_y += -player_speed * keys[pygame.K_UP] + player_speed * keys[pygame.K_DOWN]
-        self.new_x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
+        if self.invincible:
+            self.invincible_animation_count += 1
+            if self.invincible_animation_count >= 50:
+                self.invincible_animation_count = 0
+                self.invincible = False 
+              
         
-        if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
-            self.new_y -= player_speed
-            self.new_x +=0
+        #checking stunned condition
+        if self.stunned == True:
+            self.stunned_animation_count +=1
+        if self.stunned_animation_count >=25:
+            self.stunned_animation_count = 0
+            self.stunned = False       
+
+        
+        if self.stunned == False:
+
+            keys = pygame.key.get_pressed()
+            
+
+            
+            self.new_y = self.y
+            self.new_x = self.x
+
+            self.new_y += -player_speed * keys[pygame.K_UP] + player_speed * keys[pygame.K_DOWN]
+            self.new_x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
+            
+            
+            if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
+                self.new_y -= player_speed
+                self.new_x +=0
 
 
-            if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
-                if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+                if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                    if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
+                        self.health -=1
+                        self.invincible = True
+                        self.new_y += player_speed *20
 
-                    self.x = self.new_x
-                    self.y = self.new_y  
+                        self.new_x +=0
+                        self.stunned = True 
+                        self.x = self.new_x
+                                                                        
+                        
+                        Obj_Coords = []
+                        curr = (self.new_x, self.new_y, self.size/2)    
+                                                
+                        for x in Object_Coords:
+                            if x != curr:
+                                Obj_Coords.append(x)
+                        for x in Obj_Coords:
+
+                            x_range = []
+                            y_range = []
+                            left_x = x[0] - x[2]
+                            right_x = x[0] + x[2]
+                            high_y = x[1] - x[2]
+                            low_y = x[1] + x[2]
+                            x_range.append(left_x)
+                            x_range.append(right_x)
+                            y_range.append(high_y)
+                            y_range.append(low_y)        
+                            
+                            
+                            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
+                                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
+                                    self.rect.center = (self.x, self.y)
+                                    Links_Pos.append(self.rect.center)
+                                    Enemy_Hit = True 
+                                    break 
+                        
+                        if Enemy_Hit==True:
+                            return              
+                        if self.new_y > HEIGHT - self.size:
+                            self.new_y = self.y
+                            self.rect.center = (self.x, self.y)
+                            Links_Pos.append(self.rect.center)
+                            self.up = True
+                            self.down = False
+                            self.right = False
+                            self.left = False
+                              
+
+                        else:
+
+                            self.y = self.new_y  
+                            self.rect.center = (self.x, self.y)
+                            Links_Pos.append(self.rect.center)
+                            self.up = True
+                            self.down = False
+                            self.right = False
+                            self.left = False  
+
+
+                    if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+
+                        self.x = self.new_x
+                        self.y = self.new_y  
+                        self.rect.center = (self.x, self.y)
+                        Links_Pos.append(self.rect.center)
+                        self.up = True
+                        self.down = False
+                        self.right = False
+                        self.left = False    
+            
+                else:
+                    
                     self.rect.center = (self.x, self.y)
                     Links_Pos.append(self.rect.center)
                     self.up = True
                     self.down = False
                     self.right = False
-                    self.left = False    
-        
-            else:
-                
-                self.rect.center = (self.x, self.y)
-                Links_Pos.append(self.rect.center)
-        if keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
+                    self.left = False 
+            
+            if keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
 
-            self.new_y += player_speed
-            self.new_x +=0
-            if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
-                if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+                self.new_y += player_speed
+                self.new_x +=0
+                if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                    if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
+                        self.health -=1
+                        self.invincible = True
+                        self.new_y -= player_speed *20
+                        self.new_x +=0
+                        self.stunned = True
+                       
 
-                    self.x = self.new_x
-                    self.y = self.new_y  
+                        Obj_Coords = []
+                        curr = (self.new_x, self.new_y, self.size/2)     
+                                                
+                        for x in Object_Coords:
+                            if x != curr:
+                                Obj_Coords.append(x)
+                        for x in Obj_Coords:
+                        
+                            x_range = []
+                            y_range = []
+                            left_x = x[0] - x[2]
+                            right_x = x[0] + x[2]
+                            high_y = x[1] - x[2]
+                            low_y = x[1] + x[2]
+                            x_range.append(left_x)
+                            x_range.append(right_x)
+                            y_range.append(high_y)
+                            y_range.append(low_y)        
+                            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
+                                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
+                                    self.rect.center = (self.x, self.y)
+                                    Links_Pos.append(self.rect.center)
+                                    Enemy_Hit = True 
+                                    break 
+                        
+                        if Enemy_Hit==True:
+                            return  
+                                                         
+                            
+                                                      
+                        if self.new_y < self.size:
+                            self.new_y = self.y
+                            self.rect.center = (self.x, self.y)
+                            Links_Pos.append(self.rect.center)
+                            self.up = False 
+                            self.down = True
+                            self.right = False
+                            self.left = False
+                              
+                        else:
+
+                            self.x = self.new_x
+                            self.y = self.new_y  
+                            self.rect.center = (self.x, self.y)
+                            Links_Pos.append(self.rect.center)
+                            self.up = False 
+                            self.down = True
+                            self.right = False
+                            self.left = False  
+                    
+                    if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+
+                        self.x = self.new_x
+                        self.y = self.new_y  
+                        self.rect.center = (self.x, self.y)
+                        Links_Pos.append(self.rect.center)
+                        self.down = True
+                        self.up = False
+                        self.right = False
+                        self.left = False    
+            
+                else:
+                    
                     self.rect.center = (self.x, self.y)
                     Links_Pos.append(self.rect.center)
+                    self.up = False 
                     self.down = True
-                    self.up = False
                     self.right = False
-                    self.left = False    
-        
-            else:
-                
-                self.rect.center = (self.x, self.y)
-                Links_Pos.append(self.rect.center)
-        
-        if keys[pygame.K_RIGHT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT]:
-
-            self.new_x += player_speed
-            self.new_y +=0
+                    self.left = False  
             
-            if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
-                if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+            if keys[pygame.K_RIGHT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT]:
 
-                    self.x = self.new_x
-                    self.y = self.new_y  
+                self.new_x += player_speed
+                self.new_y +=0
+                
+                if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                    if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
+                        self.health -=1
+                        self.invincible = True
+                        self.new_x -= player_speed *20
+                        self.new_y +=0
+                        self.stunned = True
+
+                        
+                        Obj_Coords = []
+                        curr = (self.new_x, self.new_y, self.size/2)     
+                                                
+                        for x in Object_Coords:
+                            if x != curr:
+                                Obj_Coords.append(x)
+                        for x in Obj_Coords:
+
+                            x_range = []
+                            y_range = []
+                            left_x = x[0] - x[2]
+                            right_x = x[0] + x[2]
+                            high_y = x[1] - x[2]
+                            low_y = x[1] + x[2]
+                            x_range.append(left_x)
+                            x_range.append(right_x)
+                            y_range.append(high_y)
+                            y_range.append(low_y)        
+                            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
+                                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
+                                    
+                                    print(self.new_x, self.new_y)
+                                    print(self.x, self.y)
+                                    self.rect.center = (self.x, self.y)
+                                    Links_Pos.append(self.rect.center)
+                                    Enemy_Hit = True 
+                                    break 
+                        
+                        if Enemy_Hit==True:
+                            return      
+
+
+                        if self.new_x < self.size:
+                            self.new_x = self.x
+                            self.rect.center = (self.x, self.y)
+                            Links_Pos.append(self.rect.center)
+                            self.up = False 
+                            self.down = False
+                            self.right = True
+                            self.left = False
+                             
+                        else:
+
+                            self.x = self.new_x
+                            self.y = self.new_y  
+                            self.rect.center = (self.x, self.y)
+                            Links_Pos.append(self.rect.center)
+                            self.up = False 
+                            self.down = False
+                            self.right = True
+                            self.left = False 
+                    
+                    if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+
+                        self.x = self.new_x
+                        self.y = self.new_y  
+                        self.rect.center = (self.x, self.y)
+                        Links_Pos.append(self.rect.center)
+                        self.up = False 
+                        self.down = False
+                        self.right = True
+                        self.left = False     
+            
+                else:
+                    
                     self.rect.center = (self.x, self.y)
                     Links_Pos.append(self.rect.center)
+                    self.up = False 
                     self.down = False
-                    self.up = False
                     self.right = True
-                    self.left = False    
-        
-            else:
+                    self.left = False 
+
+            if keys[pygame.K_LEFT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT]:
+
+                self.new_x -= player_speed
+                self.new_y +=0
                 
-                self.rect.center = (self.x, self.y)
-                Links_Pos.append(self.rect.center)
+                if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                    if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
+                        self.health -=1
+                        self.invincible = True
+                        self.new_x += player_speed *20
+                        self.new_y +=0
+                        self.stunned = True
 
-        if keys[pygame.K_LEFT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT]:
+                        
+                        Obj_Coords = []
+                        curr = (self.x, self.y, self.size/2)    
+                                                
+                        for x in Object_Coords:
+                            if x != curr:
+                                Obj_Coords.append(x)
+                        
+                        for x in Obj_Coords:        
+                            x_range = []
+                            y_range = []
+                            left_x = x[0] - x[2]
+                            right_x = x[0] + x[2]
+                            high_y = x[1] - x[2]
+                            low_y = x[1] + x[2]
+                            x_range.append(left_x)
+                            x_range.append(right_x)
+                            y_range.append(high_y)
+                            y_range.append(low_y)        
+                            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
+                                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
+                                    
+                                    self.rect.center = (self.x, self.y)
+                                    Links_Pos.append(self.rect.center)
+                                    Enemy_Hit = True 
+                                    break 
+                        if Enemy_Hit==True:
+                            return     
 
-            self.new_x -= player_speed
-            self.new_y +=0
+                        if self.new_x > WIDTH - self.size:
+                            self.new_x = self.x
+                            self.rect.center = (self.x, self.y)
+                            Links_Pos.append(self.rect.center)
+                            self.up = False 
+                            self.down = False
+                            self.right = False
+                            self.left = True
+                                         
+
+                        else:
+
+                            self.x = self.new_x
+                            self.y = self.new_y  
+                            self.rect.center = (self.x, self.y)
+                            Links_Pos.append(self.rect.center)
+                            self.up = False 
+                            self.down = False
+                            self.right = False
+                            self.left = True  
+                    
+                    if self.coords_to_avoid((self.new_x, self.new_y)) == False:
+
+                        self.x = self.new_x
+                        self.y = self.new_y  
+                        self.rect.center = (self.x, self.y)
+                        Links_Pos.append(self.rect.center)
+                        self.up = False 
+                        self.down = False
+                        self.right = False
+                        self.left = True     
             
-            if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
-                if self.coords_to_avoid((self.new_x, self.new_y)) == False:
-
-                    self.x = self.new_x
-                    self.y = self.new_y  
+                else:
+                    
                     self.rect.center = (self.x, self.y)
                     Links_Pos.append(self.rect.center)
+                    self.up = False 
                     self.down = False
-                    self.up = False
                     self.right = False
-                    self.left = True    
-        
-            else:
-                
-                self.rect.center = (self.x, self.y)
-                Links_Pos.append(self.rect.center)
+                    self.left = True  
+            
+            
 
 
 
@@ -505,9 +808,11 @@ while running:
     if event.type == pygame.KEYDOWN:
         
         player.update()
+    #Placeholder for now, when he dies
+    if player.health == 0:
+        sys.exit()
 
-      
-    
+        
     screen.fill(GROUND_COLOR)
            
     Object_Coords[0] = (player.x, player.y, player.size/2)
