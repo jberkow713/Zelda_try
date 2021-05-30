@@ -402,18 +402,42 @@ class Link:
                      
 
         return False
+    def non_moving_check(self):
+        print(self.health)
+        if self.invincible == True:
+            
+            for x in Coord_List:
+                            
+                x_range = []
+                y_range = []
+                left_x = x[0] - x[2]
+                right_x = x[0] + x[2]
+                high_y = x[1] - x[2]
+                low_y = x[1] + x[2]
+                x_range.append(left_x)
+                x_range.append(right_x)
+                y_range.append(high_y)
+                y_range.append(low_y)
+            
 
+                if self.x >=x_range[0]-(.3*self.size) and self.x <= x_range[1]+(.3*self.size):
+                    if self.y >= y_range[0]-(.3*self.size) and self.y <= y_range[1]+(.3*self.size):
+                        print('Enemy hit')
+                        self.health -=.1
+                        if self.health <=0:
+                            print('Game Over')
+
+                            return sys.exit() 
+
+        return 
     def update(self):
-        
-        #MOVEMENT
-        
-               
         # print(self.invincible)
+        print(self.health)
         Enemy_Hit = False                   
 
         if self.invincible:
             self.invincible_animation_count += 1
-            if self.invincible_animation_count >= 50:
+            if self.invincible_animation_count >= 75:
                 self.invincible_animation_count = 0
                 self.invincible = False 
               
@@ -423,9 +447,12 @@ class Link:
             self.stunned_animation_count +=1
         if self.stunned_animation_count >=25:
             self.stunned_animation_count = 0
-            self.stunned = False       
-
+            self.stunned = False   
         
+        #First check if not moving, and inside enemy, reduce health
+        
+        
+        #If not temporarily stunned, check movement
         if self.stunned == False:
 
             keys = pygame.key.get_pressed()
@@ -818,6 +845,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+    
+
     if event.type == pygame.KEYDOWN:
         
         player.update()
@@ -842,6 +871,8 @@ while running:
         index +=1
         length -=1    
     
+    
+    
     screen.blit(player.image, player.rect)
     
     for x in enemy_list:
@@ -851,10 +882,10 @@ while running:
             x.update()
 
         screen.blit(x.image, x.rect)
-    
+
     for x in object_list:
         screen.blit(x.image, x.rect)
-    
+    player.non_moving_check()
 
     pygame.display.flip()
 
