@@ -409,7 +409,7 @@ class Link:
         
                
         # print(self.invincible)
-                          
+        Enemy_Hit = False                   
 
         if self.invincible:
             self.invincible_animation_count += 1
@@ -456,7 +456,7 @@ class Link:
                                                                         
                         
                         Obj_Coords = []
-                        curr = (self.new_x, self.new_y, self.size/2)    
+                        curr = (self.x, self.y, self.size/2)    
                                                 
                         for x in Object_Coords:
                             if x != curr:
@@ -477,6 +477,7 @@ class Link:
                             
                             if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
                                 if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
+                                    
                                     self.rect.center = (self.x, self.y)
                                     Links_Pos.append(self.rect.center)
                                     Enemy_Hit = True 
@@ -484,6 +485,7 @@ class Link:
                         
                         if Enemy_Hit==True:
                             return              
+                        
                         if self.new_y > HEIGHT - self.size:
                             self.new_y = self.y
                             self.rect.center = (self.x, self.y)
@@ -492,17 +494,19 @@ class Link:
                             self.down = False
                             self.right = False
                             self.left = False
+                            return 
                               
 
-                        else:
+                        
 
-                            self.y = self.new_y  
-                            self.rect.center = (self.x, self.y)
-                            Links_Pos.append(self.rect.center)
-                            self.up = True
-                            self.down = False
-                            self.right = False
-                            self.left = False  
+                        self.y = self.new_y  
+                        self.rect.center = (self.new_x, self.new_y)
+                        Links_Pos.append(self.rect.center)
+                        self.up = True
+                        self.down = False
+                        self.right = False
+                        self.left = False
+                        return   
 
 
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
@@ -539,7 +543,7 @@ class Link:
                        
 
                         Obj_Coords = []
-                        curr = (self.new_x, self.new_y, self.size/2)     
+                        curr = (self.x, self.y, self.size/2)     
                                                 
                         for x in Object_Coords:
                             if x != curr:
@@ -558,6 +562,7 @@ class Link:
                             y_range.append(low_y)        
                             if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
                                 if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
+                                    
                                     self.rect.center = (self.x, self.y)
                                     Links_Pos.append(self.rect.center)
                                     Enemy_Hit = True 
@@ -576,17 +581,19 @@ class Link:
                             self.down = True
                             self.right = False
                             self.left = False
+                            return 
                               
-                        else:
+                    
 
-                            self.x = self.new_x
-                            self.y = self.new_y  
-                            self.rect.center = (self.x, self.y)
-                            Links_Pos.append(self.rect.center)
-                            self.up = False 
-                            self.down = True
-                            self.right = False
-                            self.left = False  
+                        self.x = self.new_x
+                        self.y = self.new_y  
+                        self.rect.center = (self.x, self.y)
+                        Links_Pos.append(self.rect.center)
+                        self.up = False 
+                        self.down = True
+                        self.right = False
+                        self.left = False
+                        return   
                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
@@ -623,7 +630,8 @@ class Link:
 
                         
                         Obj_Coords = []
-                        curr = (self.new_x, self.new_y, self.size/2)     
+                        curr = (self.x, self.y, self.size/2)
+                             
                                                 
                         for x in Object_Coords:
                             if x != curr:
@@ -643,17 +651,16 @@ class Link:
                             if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
                                 if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
                                     
-                                    print(self.new_x, self.new_y)
-                                    print(self.x, self.y)
                                     self.rect.center = (self.x, self.y)
                                     Links_Pos.append(self.rect.center)
                                     Enemy_Hit = True 
                                     break 
                         
+
                         if Enemy_Hit==True:
                             return      
 
-
+                        
                         if self.new_x < self.size:
                             self.new_x = self.x
                             self.rect.center = (self.x, self.y)
@@ -662,17 +669,19 @@ class Link:
                             self.down = False
                             self.right = True
                             self.left = False
+                            return 
                              
-                        else:
+                    
 
-                            self.x = self.new_x
-                            self.y = self.new_y  
-                            self.rect.center = (self.x, self.y)
-                            Links_Pos.append(self.rect.center)
-                            self.up = False 
-                            self.down = False
-                            self.right = True
-                            self.left = False 
+                        self.x = self.new_x
+                        self.y = self.new_y  
+                        self.rect.center = (self.x, self.y)
+                        Links_Pos.append(self.rect.center)
+                        self.up = False 
+                        self.down = False
+                        self.right = True
+                        self.left = False
+                        return  
                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
@@ -709,7 +718,8 @@ class Link:
 
                         
                         Obj_Coords = []
-                        curr = (self.x, self.y, self.size/2)    
+                        curr = (self.x, self.y, self.size/2)
+                        # curr2 = (self.new_x, self.new_y, self.size/2)    
                                                 
                         for x in Object_Coords:
                             if x != curr:
@@ -733,6 +743,7 @@ class Link:
                                     Links_Pos.append(self.rect.center)
                                     Enemy_Hit = True 
                                     break 
+                        
                         if Enemy_Hit==True:
                             return     
 
@@ -744,18 +755,20 @@ class Link:
                             self.down = False
                             self.right = False
                             self.left = True
+                            return 
                                          
 
-                        else:
+                    
 
-                            self.x = self.new_x
-                            self.y = self.new_y  
-                            self.rect.center = (self.x, self.y)
-                            Links_Pos.append(self.rect.center)
-                            self.up = False 
-                            self.down = False
-                            self.right = False
-                            self.left = True  
+                        self.x = self.new_x
+                        self.y = self.new_y  
+                        self.rect.center = (self.x, self.y)
+                        Links_Pos.append(self.rect.center)
+                        self.up = False 
+                        self.down = False
+                        self.right = False
+                        self.left = True
+                        return   
                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
