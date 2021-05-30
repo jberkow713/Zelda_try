@@ -159,7 +159,6 @@ class Enemy:
 
                     current_x = self.x
                     current_y = self.y                    
-                    
 
                     current_y -= self.speed
                     current_x += 0
@@ -344,25 +343,23 @@ class Link:
         self.up = False
         self.left = False
         self.right = False
+        self.ring = None 
         Links_Pos.append(self.rect.center)
         Object_Coords.append((self.x, self.y))
     
     def coords_to_avoid(self, coord):
-        
-                
+              
         Enemy_COORD_List = []
         Object_Coord_List = []
 
         curr = (self.x, self.y, self.size/2)
-        
-        
+     
         for x in Coord_List:
             Enemy_COORD_List.append(x)
         
         for x in Object_Coords:
             if x != curr:
                 Object_Coord_List.append(x)
-
 
         for x in Object_Coord_List:
             x_range = []
@@ -376,7 +373,6 @@ class Link:
             y_range.append(high_y)
             y_range.append(low_y)
             
-
             if coord[0] >=x_range[0]-(.3*self.size) and coord[0] <= x_range[1]+(.3*self.size):
                 if coord[1] >= y_range[0]-(.3*self.size) and coord[1] <= y_range[1]+(.3*self.size):
                     return True 
@@ -392,16 +388,13 @@ class Link:
             x_range.append(right_x)
             y_range.append(high_y)
             y_range.append(low_y)
-            
 
             if coord[0] >=x_range[0]-(.3*self.size) and coord[0] <= x_range[1]+(.3*self.size):
                 if coord[1] >= y_range[0]-(.3*self.size) and coord[1] <= y_range[1]+(.3*self.size):
                     if self.invincible == False:
                         return 99
-                                                                                                                         
-                     
-
         return False
+    
     def non_moving_check(self):
         print(self.health)
         if self.invincible == True:
@@ -418,30 +411,94 @@ class Link:
                 x_range.append(right_x)
                 y_range.append(high_y)
                 y_range.append(low_y)
-            
-
+    
                 if self.x >=x_range[0]-(.3*self.size) and self.x <= x_range[1]+(.3*self.size):
                     if self.y >= y_range[0]-(.3*self.size) and self.y <= y_range[1]+(.3*self.size):
-                        print('Enemy hit')
-                        self.health -=.1
+                        
+                        self.health -=.01
+                        self.health = round(self.health,2)
                         if self.health <=0:
                             print('Game Over')
 
                             return sys.exit() 
 
-        return 
+        return
+    def player_enemy_collision(self):
+        Enemy_Hit = False 
+        Obj_Coords = []
+        curr = (self.x, self.y, self.size/2)    
+                                
+        for x in Object_Coords:
+            if x != curr:
+                Obj_Coords.append(x)
+        for x in Obj_Coords:
+
+            x_range = []
+            y_range = []
+            left_x = x[0] - x[2]
+            right_x = x[0] + x[2]
+            high_y = x[1] - x[2]
+            low_y = x[1] + x[2]
+            x_range.append(left_x)
+            x_range.append(right_x)
+            y_range.append(high_y)
+            y_range.append(low_y)        
+            
+            
+            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
+                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
+                    
+                    self.rect.center = (self.x, self.y)
+                    Links_Pos.append(self.rect.center)
+                    Enemy_Hit = True 
+                    break 
+        
+        if Enemy_Hit==True:
+            return              
+
+    def set_player_direction(self,direction):
+        if direction == 'UP':
+            self.rect.center = (self.x, self.y)
+            Links_Pos.append(self.rect.center)
+            self.up = True
+            self.down = False
+            self.right = False
+            self.left = False
+            return
+        elif direction == 'DOWN':
+            self.rect.center = (self.x, self.y)
+            Links_Pos.append(self.rect.center)
+            self.up = False
+            self.down = True 
+            self.right = False
+            self.left = False
+            return
+        elif direction == 'RIGHT':
+            self.rect.center = (self.x, self.y)
+            Links_Pos.append(self.rect.center)
+            self.up = False
+            self.down = False 
+            self.right = True 
+            self.left = False
+            return
+        elif direction == 'LEFT':
+            self.rect.center = (self.x, self.y)
+            Links_Pos.append(self.rect.center)
+            self.up = False
+            self.down = False 
+            self.right = False 
+            self.left = True
+            return
+              
+
     def update(self):
         # print(self.invincible)
-        print(self.health)
-        Enemy_Hit = False                   
-
         if self.invincible:
             self.invincible_animation_count += 1
             if self.invincible_animation_count >= 75:
                 self.invincible_animation_count = 0
                 self.invincible = False 
-              
-        
+                
         #checking stunned condition
         if self.stunned == True:
             self.stunned_animation_count +=1
@@ -449,31 +506,23 @@ class Link:
             self.stunned_animation_count = 0
             self.stunned = False   
         
-        #First check if not moving, and inside enemy, reduce health
-        
-        
-        #If not temporarily stunned, check movement
         if self.stunned == False:
 
             keys = pygame.key.get_pressed()
-            
-
-            
+              
             self.new_y = self.y
             self.new_x = self.x
 
             self.new_y += -player_speed * keys[pygame.K_UP] + player_speed * keys[pygame.K_DOWN]
             self.new_x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
-            
-            
+                    
             if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
                 self.new_y -= player_speed
                 self.new_x +=0
 
-
                 if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
-                        self.health -=1
+                        self.health -=.5
                         self.invincible = True
                         self.new_y += player_speed *20
 
@@ -481,80 +530,24 @@ class Link:
                         self.stunned = True 
                         self.x = self.new_x
                                                                         
-                        
-                        Obj_Coords = []
-                        curr = (self.x, self.y, self.size/2)    
+                        self.player_enemy_collision()
                                                 
-                        for x in Object_Coords:
-                            if x != curr:
-                                Obj_Coords.append(x)
-                        for x in Obj_Coords:
-
-                            x_range = []
-                            y_range = []
-                            left_x = x[0] - x[2]
-                            right_x = x[0] + x[2]
-                            high_y = x[1] - x[2]
-                            low_y = x[1] + x[2]
-                            x_range.append(left_x)
-                            x_range.append(right_x)
-                            y_range.append(high_y)
-                            y_range.append(low_y)        
-                            
-                            
-                            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
-                                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
-                                    
-                                    self.rect.center = (self.x, self.y)
-                                    Links_Pos.append(self.rect.center)
-                                    Enemy_Hit = True 
-                                    break 
-                        
-                        if Enemy_Hit==True:
-                            return              
-                        
                         if self.new_y > HEIGHT - self.size:
                             self.new_y = self.y
-                            self.rect.center = (self.x, self.y)
-                            Links_Pos.append(self.rect.center)
-                            self.up = True
-                            self.down = False
-                            self.right = False
-                            self.left = False
-                            return 
-                              
-
+                            self.set_player_direction('UP')
                         
-
                         self.y = self.new_y  
-                        self.rect.center = (self.new_x, self.new_y)
-                        Links_Pos.append(self.rect.center)
-                        self.up = True
-                        self.down = False
-                        self.right = False
-                        self.left = False
-                        return   
-
+                        self.set_player_direction('UP')
 
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.rect.center = (self.x, self.y)
-                        Links_Pos.append(self.rect.center)
-                        self.up = True
-                        self.down = False
-                        self.right = False
-                        self.left = False    
+                        self.set_player_direction('UP')   
             
                 else:
                     
-                    self.rect.center = (self.x, self.y)
-                    Links_Pos.append(self.rect.center)
-                    self.up = True
-                    self.down = False
-                    self.right = False
-                    self.left = False 
+                    self.set_player_direction('UP')
             
             if keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
 
@@ -562,85 +555,31 @@ class Link:
                 self.new_x +=0
                 if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
-                        self.health -=1
+                        self.health -=.5
                         self.invincible = True
                         self.new_y -= player_speed *20
                         self.new_x +=0
                         self.stunned = True
                        
-
-                        Obj_Coords = []
-                        curr = (self.x, self.y, self.size/2)     
-                                                
-                        for x in Object_Coords:
-                            if x != curr:
-                                Obj_Coords.append(x)
-                        for x in Obj_Coords:
-                        
-                            x_range = []
-                            y_range = []
-                            left_x = x[0] - x[2]
-                            right_x = x[0] + x[2]
-                            high_y = x[1] - x[2]
-                            low_y = x[1] + x[2]
-                            x_range.append(left_x)
-                            x_range.append(right_x)
-                            y_range.append(high_y)
-                            y_range.append(low_y)        
-                            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
-                                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
-                                    
-                                    self.rect.center = (self.x, self.y)
-                                    Links_Pos.append(self.rect.center)
-                                    Enemy_Hit = True 
-                                    break 
-                        
-                        if Enemy_Hit==True:
-                            return  
-                                                         
-                            
-                                                      
+                        self.player_enemy_collision()
+                                             
                         if self.new_y < self.size:
                             self.new_y = self.y
-                            self.rect.center = (self.x, self.y)
-                            Links_Pos.append(self.rect.center)
-                            self.up = False 
-                            self.down = True
-                            self.right = False
-                            self.left = False
-                            return 
-                              
-                    
+                            self.set_player_direction('DOWN')
 
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.rect.center = (self.x, self.y)
-                        Links_Pos.append(self.rect.center)
-                        self.up = False 
-                        self.down = True
-                        self.right = False
-                        self.left = False
-                        return   
+                        self.set_player_direction('DOWN')  
                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.rect.center = (self.x, self.y)
-                        Links_Pos.append(self.rect.center)
-                        self.down = True
-                        self.up = False
-                        self.right = False
-                        self.left = False    
+                        self.set_player_direction('DOWN')   
             
                 else:
                     
-                    self.rect.center = (self.x, self.y)
-                    Links_Pos.append(self.rect.center)
-                    self.up = False 
-                    self.down = True
-                    self.right = False
-                    self.left = False  
+                    self.set_player_direction('DOWN')
             
             if keys[pygame.K_RIGHT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT]:
 
@@ -649,86 +588,31 @@ class Link:
                 
                 if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
-                        self.health -=1
+                        self.health -=.5
                         self.invincible = True
                         self.new_x -= player_speed *20
                         self.new_y +=0
                         self.stunned = True
-
-                        
-                        Obj_Coords = []
-                        curr = (self.x, self.y, self.size/2)
-                             
-                                                
-                        for x in Object_Coords:
-                            if x != curr:
-                                Obj_Coords.append(x)
-                        for x in Obj_Coords:
-
-                            x_range = []
-                            y_range = []
-                            left_x = x[0] - x[2]
-                            right_x = x[0] + x[2]
-                            high_y = x[1] - x[2]
-                            low_y = x[1] + x[2]
-                            x_range.append(left_x)
-                            x_range.append(right_x)
-                            y_range.append(high_y)
-                            y_range.append(low_y)        
-                            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
-                                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
-                                    
-                                    self.rect.center = (self.x, self.y)
-                                    Links_Pos.append(self.rect.center)
-                                    Enemy_Hit = True 
-                                    break 
-                        
-
-                        if Enemy_Hit==True:
-                            return      
-
+                                                   
+                        self.player_enemy_collision()   
                         
                         if self.new_x < self.size:
                             self.new_x = self.x
-                            self.rect.center = (self.x, self.y)
-                            Links_Pos.append(self.rect.center)
-                            self.up = False 
-                            self.down = False
-                            self.right = True
-                            self.left = False
-                            return 
+                            self.set_player_direction('RIGHT')
                              
-                    
-
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.rect.center = (self.x, self.y)
-                        Links_Pos.append(self.rect.center)
-                        self.up = False 
-                        self.down = False
-                        self.right = True
-                        self.left = False
-                        return  
+                        self.set_player_direction('RIGHT')
                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.rect.center = (self.x, self.y)
-                        Links_Pos.append(self.rect.center)
-                        self.up = False 
-                        self.down = False
-                        self.right = True
-                        self.left = False     
+                        self.set_player_direction('RIGHT')  
             
                 else:
                     
-                    self.rect.center = (self.x, self.y)
-                    Links_Pos.append(self.rect.center)
-                    self.up = False 
-                    self.down = False
-                    self.right = True
-                    self.left = False 
+                    self.set_player_direction('RIGHT')
 
             if keys[pygame.K_LEFT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT]:
 
@@ -737,92 +621,31 @@ class Link:
                 
                 if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
-                        self.health -=1
+                        self.health -=.5
                         self.invincible = True
                         self.new_x += player_speed *20
                         self.new_y +=0
                         self.stunned = True
-
                         
-                        Obj_Coords = []
-                        curr = (self.x, self.y, self.size/2)
-                        # curr2 = (self.new_x, self.new_y, self.size/2)    
-                                                
-                        for x in Object_Coords:
-                            if x != curr:
-                                Obj_Coords.append(x)
-                        
-                        for x in Obj_Coords:        
-                            x_range = []
-                            y_range = []
-                            left_x = x[0] - x[2]
-                            right_x = x[0] + x[2]
-                            high_y = x[1] - x[2]
-                            low_y = x[1] + x[2]
-                            x_range.append(left_x)
-                            x_range.append(right_x)
-                            y_range.append(high_y)
-                            y_range.append(low_y)        
-                            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
-                                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
-                                    
-                                    self.rect.center = (self.x, self.y)
-                                    Links_Pos.append(self.rect.center)
-                                    Enemy_Hit = True 
-                                    break 
-                        
-                        if Enemy_Hit==True:
-                            return     
+                        self.player_enemy_collision()
 
                         if self.new_x > WIDTH - self.size:
                             self.new_x = self.x
-                            self.rect.center = (self.x, self.y)
-                            Links_Pos.append(self.rect.center)
-                            self.up = False 
-                            self.down = False
-                            self.right = False
-                            self.left = True
-                            return 
-                                         
-
-                    
-
+                            self.set_player_direction('LEFT')
+ 
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.rect.center = (self.x, self.y)
-                        Links_Pos.append(self.rect.center)
-                        self.up = False 
-                        self.down = False
-                        self.right = False
-                        self.left = True
-                        return   
+                        self.set_player_direction('LEFT')
                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.rect.center = (self.x, self.y)
-                        Links_Pos.append(self.rect.center)
-                        self.up = False 
-                        self.down = False
-                        self.right = False
-                        self.left = True     
+                        self.set_player_direction('LEFT')  
             
                 else:
                     
-                    self.rect.center = (self.x, self.y)
-                    Links_Pos.append(self.rect.center)
-                    self.up = False 
-                    self.down = False
-                    self.right = False
-                    self.left = True  
-            
-            
-
-
-
-
-
+                    self.set_player_direction('LEFT') 
 player = Link()
 
 enemy1 = Enemy(250,250, ghost)
@@ -866,12 +689,9 @@ while running:
         curr = enemy_list[index]
         
         Coord_List[index] =  (curr.x, curr.y, curr.size/2)     
-        
-        
+       
         index +=1
         length -=1    
-    
-    
     
     screen.blit(player.image, player.rect)
     
@@ -885,6 +705,7 @@ while running:
 
     for x in object_list:
         screen.blit(x.image, x.rect)
+    
     player.non_moving_check()
 
     pygame.display.flip()
