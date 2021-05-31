@@ -397,25 +397,26 @@ class Link:
     
     def non_moving_check(self):
         
-        if self.invincible == True:
+        print(self.health)        
             
-            for x in Coord_List:
-                            
-                x_range = []
-                y_range = []
-                left_x = x[0] - x[2]
-                right_x = x[0] + x[2]
-                high_y = x[1] - x[2]
-                low_y = x[1] + x[2]
-                x_range.append(left_x)
-                x_range.append(right_x)
-                y_range.append(high_y)
-                y_range.append(low_y)
-                
-                
-                if self.x >=x_range[0]-(.3*self.size) and self.x <= x_range[1]+(.3*self.size):
-                    if self.y >= y_range[0]-(.3*self.size) and self.y <= y_range[1]+(.3*self.size):
+        for x in Coord_List:
                         
+            x_range = []
+            y_range = []
+            left_x = x[0] - x[2]
+            right_x = x[0] + x[2]
+            high_y = x[1] - x[2]
+            low_y = x[1] + x[2]
+            x_range.append(left_x)
+            x_range.append(right_x)
+            y_range.append(high_y)
+            y_range.append(low_y)
+            
+            
+            if self.x >=x_range[0]-(.6*self.size) and self.x <= x_range[1]+(.6*self.size):
+                if self.y >= y_range[0]-(.6*self.size) and self.y <= y_range[1]+(.6*self.size):
+                    if self.invincible == False:
+
                         self.health -=.01
                         self.health = round(self.health,2)
                         if self.health <=0:
@@ -432,12 +433,10 @@ class Link:
         for x in Object_Coords:
             if x != curr:
                 Obj_Coords.append(x)
-        print(curr)
-        print(Obj_Coords)
-
+        
         for x in Obj_Coords:
 
-            print(x)    
+              
             x_range = []
             y_range = []
             left_x = x[0] - x[2]
@@ -452,7 +451,7 @@ class Link:
             
             if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
                 if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
-                    print('object hit')
+                    
                     self.rect.center = (self.x, self.y)
                     Links_Pos.append(self.rect.center)
                     
@@ -499,11 +498,7 @@ class Link:
     def update(self):
         # print(self.invincible)
         
-        if self.invincible:
-            self.invincible_animation_count += 1
-            if self.invincible_animation_count >= 75:
-                self.invincible_animation_count = 0
-                self.invincible = False 
+                        
                 
         #checking stunned condition
         if self.stunned == True:
@@ -530,6 +525,8 @@ class Link:
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
                         self.health -=.5
                         self.invincible = True
+                        self.invincible_animation_count = 0
+                        
                         self.new_y += player_speed *20
 
                         self.new_x +=0
@@ -537,6 +534,7 @@ class Link:
                         self.x = self.new_x
                                                                         
                         if self.player_enemy_collision() == True:
+                            
                             return 
                                                 
                                                 
@@ -565,6 +563,8 @@ class Link:
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
                         self.health -=.5
                         self.invincible = True
+                        self.invincible_animation_count = 0
+                        
                         self.new_y -= player_speed *20
                         self.new_x +=0
                         self.stunned = True
@@ -600,6 +600,7 @@ class Link:
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
                         self.health -=.5
                         self.invincible = True
+                        self.invincible_animation_count = 0
                         
                         self.new_x -= player_speed *20
                         
@@ -636,6 +637,8 @@ class Link:
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
                         self.health -=.5
                         self.invincible = True
+                        self.invincible_animation_count = 0
+
                         self.new_x += player_speed *20
                         self.new_y +=0
                         self.stunned = True
@@ -687,6 +690,14 @@ while running:
     if event.type == pygame.KEYDOWN:
         
         player.update()
+    #this is the invicible check after player moves or is hit
+    if player.invincible:
+        player.invincible_animation_count += 1
+        if player.invincible_animation_count >= 100:
+            player.invincible_animation_count = 0
+            player.invincible = False
+    
+        
     #Placeholder for now, when he dies
     if player.health == 0:
         sys.exit()
@@ -707,8 +718,12 @@ while running:
         index +=1
         length -=1    
     
-    screen.blit(player.image, player.rect)
     
+    screen.blit(player.image, player.rect)
+    #This is the invicible check when a player is not moving, to prevent
+    # Staying inside the enemy object
+    player.non_moving_check()
+        
     for x in enemy_list:
                 
         if randomize() == True:
@@ -720,7 +735,6 @@ while running:
     for x in object_list:
         screen.blit(x.image, x.rect)
     
-    # player.non_moving_check()
-
+    
     pygame.display.flip()
 
