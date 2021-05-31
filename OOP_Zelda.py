@@ -39,8 +39,6 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("The Legend of Zelda")
 link = pygame.image.load("link.jpg").convert_alpha()
 
-
-
 link = pygame.transform.scale(link, (LINK_WIDTH, LINK_HEIGHT))
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
@@ -67,15 +65,11 @@ class OBJECT:
         self.rescale()
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
-        
 
     def rescale(self):
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         Object_Coords.append((self.x, self.y, self.size/2))
         object_list.append(self)
-
-
-
 
 class Enemy:
     def __init__(self,x,y, image):
@@ -92,7 +86,6 @@ class Enemy:
         self.movement = ['up', 'down', 'left', 'right']
         enemy_list.append(self)
         Coord_List.append((self.x, self.y))
-        
 
     def create_stats(self):
         
@@ -101,13 +94,10 @@ class Enemy:
         invis_roll = random.randint(0,10)
         if invis_roll > 7:
             self.invisible = True 
-
         
     def coords_to_avoid(self, coord):
         #Start with a list of all other enemies, and eventually objects,  that exist on the map
-        # if self.invisible == True:
-        #     return False
-        
+                
         COORD_List = []
         curr = (self.x, self.y, self.size/2)
         Big_List = Coord_List + Object_Coords
@@ -136,8 +126,7 @@ class Enemy:
                
         
     def update(self):
-        #TODO, we need to take the list of current enemy positions found in To_Avoid, and make sure that the movement does not 
-        #overlap ANY of these positions, while attacking, or while not attacking
+        #Update enemy position
         
         Links_Position = Links_Pos[-1]
 
@@ -148,8 +137,7 @@ class Enemy:
             Attacking = True
         else:
             Attacking = False    
-        
-        
+                
         if Attacking == True:
             distances = []    
            
@@ -159,9 +147,9 @@ class Enemy:
 
                     current_x = self.x
                     current_y = self.y                    
-
                     current_y -= self.speed
                     current_x += 0
+                    
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
             
@@ -170,50 +158,44 @@ class Enemy:
                         distances.append((10000,10000))    
                 
                 if x == 'down':
+
                     current_x = self.x
                     current_y = self.y 
-
                     current_y += self.speed
                     current_x +=0
 
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
-               
                             distances.append((current_x , current_y))
-                
                     else:
-
                         distances.append((10000,10000))
 
                 if x == 'left':
+
                     current_x = self.x
                     current_y = self.y 
-
                     current_y +=0
                     current_x-= self.speed
+                    
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
-                            
                             distances.append((current_x , current_y))
                         
-                    else:
-                        
+                    else:                        
                         distances.append((10000,10000))
                 
                 if x == 'right':
+
                     current_x = self.x
                     current_y = self.y 
-
                     current_y +=0
                     current_x += self.speed
                     
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
-                        if self.coords_to_avoid((current_x, current_y)) == False:
-                
+                        if self.coords_to_avoid((current_x, current_y)) == False:                
                             distances.append((current_x , current_y))
                         
                     else:
-
                         distances.append((10000,10000))
                     
             distance_to_link = []
@@ -222,20 +204,21 @@ class Enemy:
             
                 distance = math.sqrt((Links_Position[0]-x[0])**2 + (Links_Position[1]-x[1])**2)
                 distance_to_link.append(distance)
-
+            #Dictionary with possible directions and their corresponding distances
             closest_dict = dict(zip(distances, distance_to_link))
+            #no movement if trapped
             if len(closest_dict)==0:
                 self.rect.center = (self.x, self.y)
+            
             if len(closest_dict)>0:
-
+                #choose direction with closest distance to Link
                 closest = min(closest_dict, key=closest_dict.get)
-                #puts enemy back in original spot if there are no possible moves to make, instead of putting it off map
+                #puts enemy back in original spot if all moves give this default of (10,000, 10,000)
                 if closest[0] == 10000:
                     self.rect.center = (self.x, self.y)
 
                 else:
-
-
+                    #set coordinates to best possible directions coordinates    
                     self.x = closest[0]
                     self.y = closest[1]
 
@@ -256,8 +239,7 @@ class Enemy:
                     if self.coords_to_avoid((current_x, current_y)) == False:
 
                         self.x = current_x
-                        self.y = current_y 
-                                            
+                        self.y = current_y                                           
                         self.rect.center = (self.x, self.y)
                 
                 else:
@@ -277,15 +259,13 @@ class Enemy:
                     if self.coords_to_avoid((current_x, current_y)) == False:
 
                         self.x = current_x
-                        self.y = current_y 
-
+                        self.y = current_y
                         self.rect.center = (self.x, self.y)
                 else:
 
                     self.y -= self.speed
                     self.x +=0
-                    self.rect.center = (self.x, self.y) 
-                    
+                    self.rect.center = (self.x, self.y)                     
 
             if self.direction == 'left':
                 current_x = self.x
@@ -297,8 +277,7 @@ class Enemy:
                     if self.coords_to_avoid((current_x, current_y)) == False:
 
                         self.x = current_x
-                        self.y = current_y 
-
+                        self.y = current_y
                         self.rect.center = (self.x, self.y)
                 else:
                     self.y += 0
@@ -315,8 +294,7 @@ class Enemy:
                     if self.coords_to_avoid((current_x, current_y)) == False:
 
                         self.x = current_x
-                        self.y = current_y 
-                                                
+                        self.y = current_y                                                
                         self.rect.center = (self.x, self.y)
                 else:
                     
@@ -348,6 +326,10 @@ class Link:
         Object_Coords.append((self.x, self.y))
     
     def coords_to_avoid(self, coord):
+        #When Link is not invincible, makes sure he does not move over objects, or enemies
+        #True if run into object, 
+        #99 if not run into object but run into enemy
+        #False if not run into any of them
               
         Enemy_COORD_List = []
         Object_Coord_List = []
@@ -396,9 +378,9 @@ class Link:
         return False
     
     def non_moving_check(self):
-        
-        print(self.health)        
-            
+        #When Link is not invincible and not moving, checks if he is inside a monster, or near a monster...
+        #Sensitive range
+
         for x in Coord_List:
                         
             x_range = []
@@ -410,8 +392,7 @@ class Link:
             x_range.append(left_x)
             x_range.append(right_x)
             y_range.append(high_y)
-            y_range.append(low_y)
-            
+            y_range.append(low_y)          
             
             if self.x >=x_range[0]-(.6*self.size) and self.x <= x_range[1]+(.6*self.size):
                 if self.y >= y_range[0]-(.6*self.size) and self.y <= y_range[1]+(.6*self.size):
@@ -423,10 +404,10 @@ class Link:
                             print('Game Over')
 
                             return sys.exit() 
-
         return
+    
     def player_enemy_collision(self):
-        
+        #Checks only player against enemy units
         Obj_Coords = []
         curr = (self.new_x, self.new_y, self.size/2)    
                                 
@@ -446,21 +427,19 @@ class Link:
             x_range.append(left_x)
             x_range.append(right_x)
             y_range.append(high_y)
-            y_range.append(low_y)        
-            
+            y_range.append(low_y)            
             
             if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
-                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
-                    
-                    self.rect.center = (self.x, self.y)
-                    Links_Pos.append(self.rect.center)
-                    
-                    return True                
+                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):                                                           
+                    return True
+        
+        if self.new_y > HEIGHT-self.size or self.new_y <0+self.size or self.new_x > WIDTH - self.size or self.new_x <0 + self.size:
+            return True
 
-        return     
-            
+        return         
 
     def set_player_direction(self,direction):
+        #Set's player directional attributes
         if direction == 'UP':
             self.rect.center = (self.x, self.y)
             Links_Pos.append(self.rect.center)
@@ -492,69 +471,56 @@ class Link:
             self.down = False 
             self.right = False 
             self.left = True
-            return
-              
+            return              
 
-    def update(self):
-        # print(self.invincible)
-        
-                        
+    def update(self):                              
                 
-        #checking stunned condition
+        #checking stunned condition, shortly paralyzed while stunned
         if self.stunned == True:
             self.stunned_animation_count +=1
         if self.stunned_animation_count >=25:
             self.stunned_animation_count = 0
             self.stunned = False   
-        
+        #Can move again once not stunned, checks key commands
         if self.stunned == False:
 
             keys = pygame.key.get_pressed()
               
             self.new_y = self.y
-            self.new_x = self.x
-
-            # self.new_y += -player_speed * keys[pygame.K_UP] + player_speed * keys[pygame.K_DOWN]
-            # self.new_x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
+            self.new_x = self.x           
                     
             if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
                 self.new_y -= player_speed
                 self.new_x +=0
-
+                #Checks to see that pre-collision move is not into wall, this must always be checked first
                 if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                    #If he has avoided an object, but run into an enemy
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
+                        #Collision created
                         self.health -=.5
                         self.invincible = True
-                        self.invincible_animation_count = 0
-                        
+                        self.invincible_animation_count = 0                        
                         self.new_y += player_speed *20
-
                         self.new_x +=0
                         self.stunned = True 
                         self.x = self.new_x
-                                                                        
+                        #This is checking objects and walls ONLY off the bounceback
+                        # If true, that means overlapped object, returns original coords, and exits function                                               
                         if self.player_enemy_collision() == True:
-                            
-                            return 
-                                                
-                                                
-                        if self.new_y > HEIGHT - self.size:
-                            self.new_y = self.y
                             self.set_player_direction('UP')
+                            return                                                       
                         
+                        #Otherwise, bounceback can occur, sets player coords equal to bounceback coords
+                        self.x = self.new_x
                         self.y = self.new_y  
                         self.set_player_direction('UP')
-
+                    #If wall has been avoided, enemy has been avoided, and objects have been avoided
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
                         self.x = self.new_x
                         self.y = self.new_y  
                         self.set_player_direction('UP')   
-            
-                else:
-                    
-                    self.set_player_direction('UP')
-            
+                            
             if keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
 
                 self.new_y += player_speed
@@ -570,12 +536,9 @@ class Link:
                         self.stunned = True
                        
                         if self.player_enemy_collision() == True:
-                            return                      
-                        
-                        if self.new_y < self.size:
-                            self.new_y = self.y
                             self.set_player_direction('DOWN')
-
+                            return                       
+                        
                         self.x = self.new_x
                         self.y = self.new_y  
                         self.set_player_direction('DOWN')  
@@ -584,36 +547,27 @@ class Link:
 
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.set_player_direction('DOWN')   
-            
-                else:
-                    
-                    self.set_player_direction('DOWN')
+                        self.set_player_direction('DOWN')               
             
             if keys[pygame.K_RIGHT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT]:
-                #moving position     
+                    
                 self.new_x += player_speed
                 self.new_y +=0
                 #if youre not off screen
                 if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
-                    #if youre not on an object, but are on an enemy hitbox, 
+                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
                         self.health -=.5
                         self.invincible = True
                         self.invincible_animation_count = 0
-                        
                         self.new_x -= player_speed *20
-                        
                         self.new_y +=0
                         self.stunned = True
 
                         if self.player_enemy_collision() == True:
-                            return   
-                                                
-                        if self.new_x < self.size:
-                            self.new_x = self.x
                             self.set_player_direction('RIGHT')
-                            
+                            return                                            
+                                                    
                         self.x = self.new_x
                         self.y = self.new_y  
                         self.set_player_direction('RIGHT')
@@ -622,12 +576,8 @@ class Link:
 
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.set_player_direction('RIGHT')  
-            
-                else:
-                    
-                    self.set_player_direction('RIGHT')
-
+                        self.set_player_direction('RIGHT')         
+                
             if keys[pygame.K_LEFT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT]:
 
                 self.new_x -= player_speed
@@ -638,18 +588,14 @@ class Link:
                         self.health -=.5
                         self.invincible = True
                         self.invincible_animation_count = 0
-
                         self.new_x += player_speed *20
                         self.new_y +=0
                         self.stunned = True
                         
                         if self.player_enemy_collision() == True:
-                            return  
-
-                        if self.new_x > WIDTH - self.size:
-                            self.new_x = self.x
                             self.set_player_direction('LEFT')
- 
+                            return
+
                         self.x = self.new_x
                         self.y = self.new_y  
                         self.set_player_direction('LEFT')
@@ -659,10 +605,7 @@ class Link:
                         self.x = self.new_x
                         self.y = self.new_y  
                         self.set_player_direction('LEFT')  
-            
-                else:
-                    
-                    self.set_player_direction('LEFT') 
+                            
 player = Link()
 
 enemy1 = Enemy(250,250, ghost)
@@ -690,23 +633,21 @@ while running:
     if event.type == pygame.KEYDOWN:
         
         player.update()
-    #this is the invicible check after player moves or is hit
+    #this is the invincible check after player moves or is hit
+    
     if player.invincible:
         player.invincible_animation_count += 1
         if player.invincible_animation_count >= 100:
             player.invincible_animation_count = 0
             player.invincible = False
-    
-        
+            
     #Placeholder for now, when he dies
     if player.health == 0:
         sys.exit()
-
         
     screen.fill(GROUND_COLOR)
            
     Object_Coords[0] = (player.x, player.y, player.size/2)
-    
 
     length = len(enemy_list)
     index = 0
@@ -718,9 +659,8 @@ while running:
         index +=1
         length -=1    
     
-    
     screen.blit(player.image, player.rect)
-    #This is the invicible check when a player is not moving, to prevent
+    #This is the invincible check when a player is not moving, to prevent
     # Staying inside the enemy object
     player.non_moving_check()
         
