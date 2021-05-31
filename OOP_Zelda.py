@@ -397,6 +397,7 @@ class Link:
     
     def non_moving_check(self):
         print(self.health)
+        print(self.invincible)
         if self.invincible == True:
             
             for x in Coord_List:
@@ -411,7 +412,9 @@ class Link:
                 x_range.append(right_x)
                 y_range.append(high_y)
                 y_range.append(low_y)
-    
+                
+                print(self.x, self.y)
+                print(Coord_List)
                 if self.x >=x_range[0]-(.3*self.size) and self.x <= x_range[1]+(.3*self.size):
                     if self.y >= y_range[0]-(.3*self.size) and self.y <= y_range[1]+(.3*self.size):
                         
@@ -424,13 +427,14 @@ class Link:
 
         return
     def player_enemy_collision(self):
-        Enemy_Hit = False 
+        
         Obj_Coords = []
-        curr = (self.x, self.y, self.size/2)    
+        curr = (self.new_x, self.new_y, self.size/2)    
                                 
         for x in Object_Coords:
             if x != curr:
                 Obj_Coords.append(x)
+        
         for x in Obj_Coords:
 
             x_range = []
@@ -450,11 +454,10 @@ class Link:
                     
                     self.rect.center = (self.x, self.y)
                     Links_Pos.append(self.rect.center)
-                    Enemy_Hit = True 
-                    break 
-        
-        if Enemy_Hit==True:
-            return              
+                    
+                    return True                
+            
+            return False 
 
     def set_player_direction(self,direction):
         if direction == 'UP':
@@ -493,6 +496,7 @@ class Link:
 
     def update(self):
         # print(self.invincible)
+        
         if self.invincible:
             self.invincible_animation_count += 1
             if self.invincible_animation_count >= 75:
@@ -513,8 +517,8 @@ class Link:
             self.new_y = self.y
             self.new_x = self.x
 
-            self.new_y += -player_speed * keys[pygame.K_UP] + player_speed * keys[pygame.K_DOWN]
-            self.new_x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
+            # self.new_y += -player_speed * keys[pygame.K_UP] + player_speed * keys[pygame.K_DOWN]
+            # self.new_x += -player_speed * keys[pygame.K_LEFT] + player_speed * keys[pygame.K_RIGHT]
                     
             if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
                 self.new_y -= player_speed
@@ -530,7 +534,9 @@ class Link:
                         self.stunned = True 
                         self.x = self.new_x
                                                                         
-                        self.player_enemy_collision()
+                        if self.player_enemy_collision() == True:
+                            return 
+                                                
                                                 
                         if self.new_y > HEIGHT - self.size:
                             self.new_y = self.y
@@ -561,8 +567,9 @@ class Link:
                         self.new_x +=0
                         self.stunned = True
                        
-                        self.player_enemy_collision()
-                                             
+                        if self.player_enemy_collision() == True:
+                            return                      
+                        
                         if self.new_y < self.size:
                             self.new_y = self.y
                             self.set_player_direction('DOWN')
@@ -582,24 +589,28 @@ class Link:
                     self.set_player_direction('DOWN')
             
             if keys[pygame.K_RIGHT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT]:
-
+                #moving position     
                 self.new_x += player_speed
                 self.new_y +=0
-                
+                #if youre not off screen
                 if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
+                    #if youre not on an object, but are on an enemy hitbox, 
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
                         self.health -=.5
                         self.invincible = True
+                        
                         self.new_x -= player_speed *20
+                        
                         self.new_y +=0
                         self.stunned = True
-                                                   
-                        self.player_enemy_collision()   
-                        
+
+                        if self.player_enemy_collision() == True:
+                            return   
+                                                
                         if self.new_x < self.size:
                             self.new_x = self.x
                             self.set_player_direction('RIGHT')
-                             
+                            
                         self.x = self.new_x
                         self.y = self.new_y  
                         self.set_player_direction('RIGHT')
@@ -627,7 +638,8 @@ class Link:
                         self.new_y +=0
                         self.stunned = True
                         
-                        self.player_enemy_collision()
+                        if self.player_enemy_collision() == True:
+                            return  
 
                         if self.new_x > WIDTH - self.size:
                             self.new_x = self.x
@@ -706,7 +718,7 @@ while running:
     for x in object_list:
         screen.blit(x.image, x.rect)
     
-    player.non_moving_check()
+    # player.non_moving_check()
 
     pygame.display.flip()
 
