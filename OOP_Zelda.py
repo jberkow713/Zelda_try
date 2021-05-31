@@ -23,7 +23,7 @@ BLUE = (0,0,255)
 PURPLE = (255,0,255)
 Links_Pos = []
 
-player_speed = 4
+player_speed = 10
 
 def randomize():
     num = random.randint(0,10)
@@ -396,8 +396,7 @@ class Link:
         return False
     
     def non_moving_check(self):
-        print(self.health)
-        print(self.invincible)
+        
         if self.invincible == True:
             
             for x in Coord_List:
@@ -413,8 +412,7 @@ class Link:
                 y_range.append(high_y)
                 y_range.append(low_y)
                 
-                print(self.x, self.y)
-                print(Coord_List)
+                
                 if self.x >=x_range[0]-(.3*self.size) and self.x <= x_range[1]+(.3*self.size):
                     if self.y >= y_range[0]-(.3*self.size) and self.y <= y_range[1]+(.3*self.size):
                         
@@ -434,9 +432,12 @@ class Link:
         for x in Object_Coords:
             if x != curr:
                 Obj_Coords.append(x)
-        
+        print(curr)
+        print(Obj_Coords)
+
         for x in Obj_Coords:
 
+            print(x)    
             x_range = []
             y_range = []
             left_x = x[0] - x[2]
@@ -451,13 +452,14 @@ class Link:
             
             if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
                 if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):
-                    
+                    print('object hit')
                     self.rect.center = (self.x, self.y)
                     Links_Pos.append(self.rect.center)
                     
                     return True                
+
+        return     
             
-            return False 
 
     def set_player_direction(self,direction):
         if direction == 'UP':
