@@ -492,6 +492,7 @@ class Link:
             if keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
                 self.new_y -= player_speed
                 self.new_x +=0
+                
                 #Checks to see that pre-collision move is not into wall, this must always be checked first
                 if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
                     #If he has avoided an object, but run into an enemy
@@ -507,24 +508,25 @@ class Link:
                         #This is checking objects and walls ONLY off the bounceback
                         # If true, that means overlapped object, returns original coords, and exits function                                               
                         if self.player_enemy_collision() == True:
-                            self.set_player_direction('UP')
+                            self.set_player_direction('UP')                             
                             return                                                       
                         
                         #Otherwise, bounceback can occur, sets player coords equal to bounceback coords
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.set_player_direction('UP')
+                        
                     #If wall has been avoided, enemy has been avoided, and objects have been avoided
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
                         self.x = self.new_x
                         self.y = self.new_y  
-                        self.set_player_direction('UP')   
+                self.set_player_direction('UP')     
                             
             if keys[pygame.K_DOWN] and not keys[pygame.K_UP] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT]:
 
                 self.new_y += player_speed
                 self.new_x +=0
+                   
                 if self.new_y < HEIGHT-self.size and self.new_y >0+self.size and self.new_x < WIDTH - self.size and self.new_x >0 + self.size:
                     if self.coords_to_avoid((self.new_x, self.new_y)) == 99:
                         self.health -=.5
@@ -536,19 +538,17 @@ class Link:
                         self.stunned = True
                        
                         if self.player_enemy_collision() == True:
-                            self.set_player_direction('DOWN')
+                            self.set_player_direction('DOWN') 
                             return                       
                         
                         self.x = self.new_x
-                        self.y = self.new_y  
-                        self.set_player_direction('DOWN')  
+                        self.y = self.new_y                          
                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
                         self.x = self.new_x
-                        self.y = self.new_y  
-                        self.set_player_direction('DOWN')               
-            
+                        self.y = self.new_y                                     
+                self.set_player_direction('DOWN') 
             if keys[pygame.K_RIGHT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT]:
                     
                 self.new_x += player_speed
@@ -565,19 +565,17 @@ class Link:
                         self.stunned = True
 
                         if self.player_enemy_collision() == True:
-                            self.set_player_direction('RIGHT')
+                            self.set_player_direction('RIGHT')                            
                             return                                            
                                                     
                         self.x = self.new_x
-                        self.y = self.new_y  
-                        self.set_player_direction('RIGHT')
+                        self.y = self.new_y                       
                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
                         self.x = self.new_x
-                        self.y = self.new_y  
-                        self.set_player_direction('RIGHT')         
-                
+                        self.y = self.new_y                               
+                self.set_player_direction('RIGHT')
             if keys[pygame.K_LEFT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT]:
 
                 self.new_x -= player_speed
@@ -593,19 +591,17 @@ class Link:
                         self.stunned = True
                         
                         if self.player_enemy_collision() == True:
-                            self.set_player_direction('LEFT')
+                            self.set_player_direction('LEFT')                            
                             return
 
                         self.x = self.new_x
-                        self.y = self.new_y  
-                        self.set_player_direction('LEFT')
+                        self.y = self.new_y                          
                     
                     if self.coords_to_avoid((self.new_x, self.new_y)) == False:
 
                         self.x = self.new_x
-                        self.y = self.new_y  
-                        self.set_player_direction('LEFT')  
-                            
+                        self.y = self.new_y                         
+                self.set_player_direction('LEFT')            
 player = Link()
 
 enemy1 = Enemy(250,250, ghost)
