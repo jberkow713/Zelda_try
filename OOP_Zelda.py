@@ -101,10 +101,8 @@ class Enemy:
         COORD_List = []
         curr = (self.x, self.y, self.size/2)
         Big_List = Coord_List + Object_Coords
-        for x in Big_List:
-            if x != curr:
-                COORD_List.append(x)
-               
+        COORD_List = [x for x in Big_List if x!= curr]
+                       
         for x in COORD_List:
             x_range = []
             y_range = []
@@ -330,19 +328,11 @@ class Link:
         #True if run into object, 
         #99 if not run into object but run into enemy
         #False if not run into any of them
-              
-        Enemy_COORD_List = []
-        Object_Coord_List = []
-
-        curr = (self.x, self.y, self.size/2)
-     
-        for x in Coord_List:
-            Enemy_COORD_List.append(x)
         
-        for x in Object_Coords:
-            if x != curr:
-                Object_Coord_List.append(x)
-
+        curr = (self.x, self.y, self.size/2)      
+        Enemy_COORD_List = [x for x in Coord_List]
+        Object_Coord_List = [x for x in Object_Coords if x != curr]
+        
         for x in Object_Coord_List:
             x_range = []
             y_range = []
@@ -408,15 +398,11 @@ class Link:
     
     def player_enemy_collision(self):
         #Checks only player against enemy units
-        Obj_Coords = []
-        curr = (self.new_x, self.new_y, self.size/2)    
-                                
-        for x in Object_Coords:
-            if x != curr:
-                Obj_Coords.append(x)
         
+        curr = (self.new_x, self.new_y, self.size/2)    
+        Obj_Coords = [x for x in Object_Coords if x != curr]                       
+                
         for x in Obj_Coords:
-
               
             x_range = []
             y_range = []
