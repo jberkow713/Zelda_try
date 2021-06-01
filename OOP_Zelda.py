@@ -330,7 +330,7 @@ class Link:
         self.size = self.width
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
-        self.health = 6
+        self.health = 10
         self.down = True #link faces down by default
         self.up = False
         self.left = False
@@ -633,7 +633,7 @@ Tree1 = OBJECT(500,500, Tree, 50)
 Tree2 = OBJECT(550,500, Tree, 50)
 Tree3 = OBJECT(605,555, Tree, 50)
 Tree4 = OBJECT(625,355, Mountain, 50)
-Tree5 = OBJECT(50,50, Mountain, 150)
+# Tree5 = OBJECT(50,50, Mountain, 150)
 Tree6 = OBJECT(900,900, Mountain, 150)
 
 
@@ -694,7 +694,10 @@ while running:
 
     for x in object_list:
         screen.blit(x.image, x.rect)
+    font = pygame.font.SysFont("comicsans", 40, True)
     
+    text = font.render(f'Health Remaining: {round(player.health,2)}', 1, RED) # Arguments are: text, anti-aliasing, color
+    screen.blit(text, (10, 10))
     
     pygame.display.flip()
 
