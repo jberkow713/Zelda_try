@@ -40,6 +40,22 @@ pygame.display.set_caption("The Legend of Zelda")
 link = pygame.image.load("link.jpg").convert_alpha()
 
 link = pygame.transform.scale(link, (LINK_WIDTH, LINK_HEIGHT))
+#Link Directions
+link_up = pygame.image.load("Link_Up_Advanced.jpg")
+link_up = pygame.transform.scale(link_up, (LINK_WIDTH, LINK_HEIGHT))
+
+link_down = pygame.image.load("Link_Down_Advanced.png")
+link_down = pygame.transform.scale(link_down, (LINK_WIDTH, LINK_HEIGHT))
+
+link_left = pygame.image.load("Link_Left_advanced.png").convert_alpha()
+link_left = pygame.transform.scale(link_left, (LINK_WIDTH, LINK_HEIGHT))
+
+link_right = pygame.image.load("Link_Right_Advanced.png").convert_alpha()
+link_right = pygame.transform.scale(link_right, (LINK_WIDTH, LINK_HEIGHT))
+
+
+
+
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
 
@@ -423,6 +439,23 @@ class Link:
             return True
 
         return         
+    def configure_direction(self):
+        if self.up == True:
+            self.image = link_up
+            self.image.set_colorkey(WHITE)
+        if self.down == True:
+            self.image = link_down
+            self.image.set_colorkey(WHITE)
+            
+        if self.right == True:
+            self.image = link_right
+            self.image.set_colorkey(WHITE)
+            
+        if self.left == True:
+            self.image = link_left
+            
+
+        return self.image        
 
     def set_player_direction(self,direction):
         #Set's player directional attributes
@@ -640,6 +673,11 @@ while running:
        
         index +=1
         length -=1    
+    
+
+    #implement function to create correct image based on direction
+
+    player.configure_direction()
     
     screen.blit(player.image, player.rect)
     #This is the invincible check when a player is not moving, to prevent
