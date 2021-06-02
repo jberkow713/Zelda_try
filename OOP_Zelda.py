@@ -400,8 +400,8 @@ class Link:
             y_range.append(high_y)
             y_range.append(low_y)          
             
-            if self.x >=x_range[0]-(.6*self.size) and self.x <= x_range[1]+(.6*self.size):
-                if self.y >= y_range[0]-(.6*self.size) and self.y <= y_range[1]+(.6*self.size):
+            if self.x >=x_range[0]-(.35*self.size) and self.x <= x_range[1]+(.35*self.size):
+                if self.y >= y_range[0]-(.35*self.size) and self.y <= y_range[1]+(.35*self.size):
                     if self.invincible == False:
 
                         self.health -=.01
