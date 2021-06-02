@@ -4,13 +4,15 @@ import sys
 import math
 from pygame.locals import(
     K_UP, K_DOWN, K_LEFT, K_RIGHT,
-    K_ESCAPE, KEYDOWN, QUIT
+    K_ESCAPE, KEYDOWN, QUIT, K_RETURN
 )
 WIDTH = 1500 #1800
 HEIGHT = 1000 #1400
 FPS = 60
 LINK_WIDTH = 100
 LINK_HEIGHT = 100
+SWORD_WIDTH = 50
+SWORD_HEIGHT = 50 
 GHOST_WIDTH = 100
 GHOST_HEIGHT = 100
 #defining colors
@@ -22,6 +24,8 @@ GREEN = (0,255,0)
 BLUE = (0,0,255)
 PURPLE = (255,0,255)
 Links_Pos = []
+
+Sword_Pos = []
 
 player_speed = 10
 
@@ -52,6 +56,19 @@ link_left = pygame.transform.scale(link_left, (LINK_WIDTH, LINK_HEIGHT))
 
 link_right = pygame.image.load("Link_Right_Advanced.png").convert_alpha()
 link_right = pygame.transform.scale(link_right, (LINK_WIDTH, LINK_HEIGHT))
+#Sword
+
+sword_up = pygame.image.load("Link_Sword_Up.jpg")
+sword_up = pygame.transform.scale(sword_up, (SWORD_WIDTH, SWORD_HEIGHT))
+
+sword_down = pygame.image.load("Link_Sword_Down.png")
+sword_down = pygame.transform.scale(sword_down, (SWORD_WIDTH, SWORD_HEIGHT))
+
+sword_left = pygame.image.load("Link_Sword_Left.jpg")
+sword_left = pygame.transform.scale(sword_left, (SWORD_WIDTH, SWORD_HEIGHT))
+
+sword_right = pygame.image.load("Link_Sword_Right.png")
+sword_right = pygame.transform.scale(sword_right, (SWORD_WIDTH, SWORD_HEIGHT))
 
 
 
@@ -315,9 +332,38 @@ class Enemy:
                     self.y += 0
                     self.x -= self.speed 
                     self.rect.center = (self.x, self.y) 
+class Sword:
+    def __init__(self, owner):
+        self.owner = owner
+        self.image = self.load_sword() 
+        self.x = -1000
+        self.y = -1000
+        self.size = SWORD_WIDTH
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.x, self.y)
+        
+
+    def load_sword(self):
+        if self.owner.direction()=='UP':
+            self.image = sword_up
+            self.image.set_colorkey(WHITE)
+            return self.image
+        if self.owner.direction()=='DOWN':
+            self.image = sword_down
+            self.image.set_colorkey(WHITE)
+            return self.image    
+        if self.owner.direction()=='RIGHT':
+            self.image = sword_right
+            self.image.set_colorkey(WHITE)
+            return self.image    
+        if self.owner.direction()=='LEFT':
+            self.image = sword_left
+            self.image.set_colorkey(WHITE)
+            return self.image
 
 class Link:
     def __init__(self):
+        self.sword = None 
         self.x = WIDTH/2
         self.y = HEIGHT/2
         self.image = link
@@ -338,7 +384,15 @@ class Link:
         self.ring = None 
         Links_Pos.append(self.rect.center)
         Object_Coords.append((self.x, self.y))
-    
+    def direction(self):
+        if self.up == True:
+            return 'UP'
+        if self.down == True:
+            return 'DOWN'
+        if self.left == True:
+            return 'LEFT'
+        if self.right == True:
+            return 'RIGHT'            
     def coords_to_avoid(self, coord):
         #When Link is not invincible, makes sure he does not move over objects, or enemies
         #True if run into object, 
@@ -621,7 +675,29 @@ class Link:
                         self.x = self.new_x
                         self.y = self.new_y                         
                 self.set_player_direction('LEFT')            
+            if keys[pygame.K_RETURN]:
+                if self.up:
+
+                    self.sword.x = self.x 
+                    self.sword.y = self.y -.5*self.size 
+                if self.down:
+                    self.sword.x = self.x
+                    self.sword.y = self.y + .5*self.size
+                if self.right:
+                    self.sword.x = self.x + .5*self.size
+                    self.sword.y = self.y 
+                if self.left:
+                    self.sword.x = self.x -.5*self.size
+                    self.sword.y = self.y             
+                
+                  
+
+
+
+
 player = Link()
+sword = Sword(player)
+player.sword = sword
 
 enemy1 = Enemy(250,250, ghost)
 enemy2 = Enemy(1250,250,ghost)
@@ -648,6 +724,7 @@ while running:
     if event.type == pygame.KEYDOWN:
         
         player.update()
+        
     #this is the invincible check after player moves or is hit
     
     if player.invincible:
@@ -680,6 +757,15 @@ while running:
     player.configure_direction()
     
     screen.blit(player.image, player.rect)
+    
+    sword.rect = sword.image.get_rect()
+    sword.rect.center = (sword.x, sword.y)
+    sword.load_sword()
+    screen.blit(sword.image, sword.rect)
+    sword.x = -1000
+    sword.y = -1000
+    
+    
     #This is the invincible check when a player is not moving, to prevent
     # Staying inside the enemy object
     player.non_moving_check()
@@ -699,5 +785,6 @@ while running:
     text = font.render(f'Health Remaining: {round(player.health,2)}', 1, RED) # Arguments are: text, anti-aliasing, color
     screen.blit(text, (10, 10))
     
+
     pygame.display.flip()
 
