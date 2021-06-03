@@ -11,8 +11,8 @@ HEIGHT = 1000 #1400
 FPS = 60
 LINK_WIDTH = 100
 LINK_HEIGHT = 100
-SWORD_WIDTH = 50
-SWORD_HEIGHT = 50 
+SWORD_WIDTH = 100
+SWORD_HEIGHT = 100 
 GHOST_WIDTH = 100
 GHOST_HEIGHT = 100
 #defining colors
@@ -25,7 +25,7 @@ BLUE = (0,0,255)
 PURPLE = (255,0,255)
 Links_Pos = []
 
-Sword_Pos = []
+sword_pos = (0,0) 
 
 player_speed = 10
 
@@ -105,7 +105,7 @@ class OBJECT:
         object_list.append(self)
 
 class Enemy:
-    def __init__(self,x,y, image):
+    def __init__(self,x,y, image, type):
         
         self.x = x
         self.y = y
@@ -119,6 +119,16 @@ class Enemy:
         self.movement = ['up', 'down', 'left', 'right']
         enemy_list.append(self)
         Coord_List.append((self.x, self.y))
+        self.type = type 
+        self.health = self.get_health()
+        self.hit = False  
+
+    def get_health(self):
+        health_dict = {'ghost': 120, 'dragon':1000, 'centaur':300}
+        for k,v in health_dict.items():
+            if self.type == k:
+                return v
+
 
     def create_stats(self):
         
@@ -676,35 +686,41 @@ class Link:
                         self.y = self.new_y                         
                 self.set_player_direction('LEFT')            
             if keys[pygame.K_RETURN]:
+                global sword_pos
+
                 if self.up:
 
                     self.sword.x = self.x 
-                    self.sword.y = self.y -.5*self.size 
+                    self.sword.y = self.y -.5*self.size
+                    sword_pos = self.x, (self.y -SWORD_WIDTH)
+                     
                 if self.down:
                     self.sword.x = self.x
                     self.sword.y = self.y + .5*self.size
+                    sword_pos = self.x, (self.y +SWORD_WIDTH)
+                    
                 if self.right:
                     self.sword.x = self.x + .5*self.size
                     self.sword.y = self.y 
+                    sword_pos = (self.x+SWORD_WIDTH), self.y
+                    
                 if self.left:
                     self.sword.x = self.x -.5*self.size
                     self.sword.y = self.y             
+                    sword_pos = (self.x - SWORD_WIDTH), self.y 
                 
-                  
-
-
-
-
+                
+                
 player = Link()
 sword = Sword(player)
 player.sword = sword
 
-enemy1 = Enemy(250,250, ghost)
-enemy2 = Enemy(1250,250,ghost)
-enemy3 = Enemy(250,750,ghost)
-enemy4 = Enemy(1250,750,ghost)
-enemy5 = Enemy(1000, 250,ghost)
-enemy6 = Enemy(1000, 500,ghost)
+enemy1 = Enemy(250,250, ghost, 'ghost')
+enemy2 = Enemy(1250,250,ghost, 'ghost')
+enemy3 = Enemy(250,750,ghost, 'ghost')
+enemy4 = Enemy(1250,750,ghost, 'ghost')
+enemy5 = Enemy(1000, 250,ghost, 'ghost')
+enemy6 = Enemy(1000, 500,ghost, 'ghost')
 Tree1 = OBJECT(500,500, Tree, 50)
 Tree2 = OBJECT(550,500, Tree, 50)
 Tree3 = OBJECT(605,555, Tree, 50)
@@ -732,7 +748,8 @@ while running:
         if player.invincible_animation_count >= 100:
             player.invincible_animation_count = 0
             player.invincible = False
-            
+
+          
     #Placeholder for now, when he dies
     if player.health == 0:
         sys.exit()
@@ -757,26 +774,63 @@ while running:
     player.configure_direction()
     
     screen.blit(player.image, player.rect)
-    
+    #Sword Graphics
     sword.rect = sword.image.get_rect()
     sword.rect.center = (sword.x, sword.y)
     sword.load_sword()
     screen.blit(sword.image, sword.rect)
     sword.x = -1000
     sword.y = -1000
-    
-    
+   
     #This is the invincible check when a player is not moving, to prevent
     # Staying inside the enemy object
     player.non_moving_check()
+
         
-    for x in enemy_list:
+    for enemy in enemy_list:
+        if enemy.health <=0:
+            #take off board if health goes to 0
+            enemy.x = -1000
+            enemy.y = -1000
                 
+        enemy_hit = False
+                
+        pos = (enemy.x, enemy.y, enemy.size/2)
+        x_range = []
+        y_range = []
+        left_x = pos[0] - pos[2]
+        right_x = pos[0] + pos[2]
+        high_y = pos[1] - pos[2]
+        low_y = pos[1] + pos[2]
+        x_range.append(left_x)
+        x_range.append(right_x)
+        y_range.append(high_y)
+        y_range.append(low_y)
+        
+        if sword_pos[0] >=x_range[0] and sword_pos[0] <= x_range[1]:
+            if sword_pos[1] >= y_range[0] and sword_pos[1] <= y_range[1]:
+                enemy_hit = True 
+
+            if enemy_hit == True:
+                
+                enemy.health -=1
+                #TODO implement enemy knockback from weapons, etc        
+                
+
         if randomize() == True:
             
-            x.update()
+            enemy.update()
 
-        screen.blit(x.image, x.rect)
+        #Sword/Weapon Interaction with enemies
+
+        if enemy.health >0:
+           
+            screen.blit(enemy.image, enemy.rect)
+
+        if enemy.health <=0:
+            #take off board if health goes to 0
+            enemy.x = -1000
+            enemy.y = -1000
 
     for x in object_list:
         screen.blit(x.image, x.rect)
