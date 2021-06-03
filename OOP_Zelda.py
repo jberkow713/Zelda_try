@@ -62,6 +62,7 @@ sword_up = pygame.image.load("Link_Sword_Up.jpg")
 sword_up = pygame.transform.scale(sword_up, (SWORD_WIDTH, SWORD_HEIGHT))
 
 sword_down = pygame.image.load("Link_Sword_Down.png")
+
 sword_down = pygame.transform.scale(sword_down, (SWORD_WIDTH, SWORD_HEIGHT))
 
 sword_left = pygame.image.load("Link_Sword_Left.jpg")
@@ -124,7 +125,7 @@ class Enemy:
         self.hit = False  
 
     def get_health(self):
-        health_dict = {'ghost': 120, 'dragon':1000, 'centaur':300}
+        health_dict = {'ghost': 40, 'dragon':200, 'centaur':60}
         for k,v in health_dict.items():
             if self.type == k:
                 return v
@@ -808,8 +809,10 @@ while running:
                 enemy_hit = True 
 
             if enemy_hit == True:
-                
-                enemy.health -=1
+                if enemy.health >0:
+                    
+                    enemy.health -=1
+                    print(enemy.health)
                 #TODO implement enemy knockback from weapons, etc        
                 
 
@@ -827,7 +830,9 @@ while running:
             #take off board if health goes to 0
             enemy.x = -1000
             enemy.y = -1000
-
+    
+    sword_pos = sword.x, sword.y 
+    
     for x in object_list:
         screen.blit(x.image, x.rect)
     font = pygame.font.SysFont("comicsans", 40, True)
