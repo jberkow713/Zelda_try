@@ -788,11 +788,7 @@ while running:
 
         
     for enemy in enemy_list:
-        if enemy.health <=0:
-            #take off board if health goes to 0
-            enemy.x = -1000
-            enemy.y = -1000
-                
+                        
         enemy_hit = False
                 
         pos = (enemy.x, enemy.y, enemy.size/2)
