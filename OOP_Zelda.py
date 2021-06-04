@@ -787,7 +787,7 @@ while running:
     # Staying inside the enemy object
     player.non_moving_check()
 
-        
+    Collision = False     
     for enemy in enemy_list:
                         
         enemy_hit = False
@@ -806,6 +806,64 @@ while running:
         
         if sword_pos[0] >=x_range[0] and sword_pos[0] <= x_range[1]:
             if sword_pos[1] >= y_range[0] and sword_pos[1] <= y_range[1]:
+                
+                #temp variables for projected direction if enemy is hit
+                enemy_new_x = enemy.x
+                enemy_new_y = enemy.y
+
+                if player.up == True:
+                    enemy_new_y -= enemy.speed *30
+                if player.down == True:
+                    enemy_new_y += enemy.speed *30
+                if player.right == True:
+                    enemy_new_x += enemy.speed *30
+                if player.left == True:
+                    enemy_new_x -= enemy.speed *30
+                
+                #if projected coordinates do not hit walls
+                if enemy_new_y < HEIGHT-enemy.size and enemy_new_y >0+enemy.size \
+                    and enemy_new_x < WIDTH - enemy.size and enemy_new_x >0 + enemy.size:
+                    #Compare to all objects except Link
+                    for x in Object_Coords[1:]:
+                        x_range = []
+                        y_range = []
+                        left_x = x[0] - x[2]
+                        right_x = x[0] + x[2]
+                        high_y = x[1] - x[2]
+                        low_y = x[1] + x[2]
+                        x_range.append(left_x)
+                        x_range.append(right_x)
+                        y_range.append(high_y)
+                        y_range.append(low_y)
+                        #if OBJECT is hit
+                        if enemy_new_x >=x_range[0]-(.3*enemy.size) and enemy_new_x <= x_range[1]+(.3*enemy.size):
+                            if enemy_new_y >= y_range[0]-(.3*enemy.size) and enemy_new_y <= y_range[1]+(.3*enemy.size):
+                                Collision = True 
+
+                        #Check if other enemies other than self are hit
+                    for x in Coord_List:
+                        
+                        x_range = []
+                        y_range = []
+                        left_x = x[0] - x[2]
+                        right_x = x[0] + x[2]
+                        high_y = x[1] - x[2]
+                        low_y = x[1] + x[2]
+                        x_range.append(left_x)
+                        x_range.append(right_x)
+                        y_range.append(high_y)
+                        y_range.append(low_y)
+                        #if Enemy is hit
+                        if enemy_new_x >=x_range[0]-(.3*enemy.size) and enemy_new_x <= x_range[1]+(.3*enemy.size):
+                            if enemy_new_y >= y_range[0]-(.3*enemy.size) and enemy_new_y <= y_range[1]+(.3*enemy.size):
+                                Collision = True 
+
+                    if Collision == False:
+                        enemy.x = enemy_new_x
+                        enemy.y = enemy_new_y
+                        print(enemy.x, enemy.y)
+                        screen.blit(enemy.image, enemy.rect)
+                
                 enemy_hit = True 
 
             if enemy_hit == True:
@@ -813,9 +871,7 @@ while running:
                     
                     enemy.health -=1
                     print(enemy.health)
-                #TODO implement enemy knockback from weapons, etc        
-                
-
+                     
         if randomize() == True:
             
             enemy.update()
