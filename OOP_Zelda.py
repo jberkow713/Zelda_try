@@ -86,7 +86,27 @@ Object_Coords = []
 enemy_list = []
 object_list = []
 
-#TODO IMPLEMENT ATTACKING, need 4 photos of link and sword, trigger certain photos baed on if self is up, down , left, right
+#TODO IMPLEMENT GENERIC COLLISION FUNCTION
+def Collide(x, y, size, buffer, starting_position, list):
+    #Check collisions for enemies, objects, Link, etc...
+
+    for A in list[starting_position:]:
+        x_range = []
+        y_range = []
+        left_x = A[0] - A[2]
+        right_x = A[0] + A[2]
+        high_y = A[1] - A[2]
+        low_y = A[1] + A[2]
+        x_range.append(left_x)
+        x_range.append(right_x)
+        y_range.append(high_y)
+        y_range.append(low_y)
+
+        if x >=x_range[0]-(buffer*size) and x <= x_range[1]+(buffer*size):
+            if y >= y_range[0]-(buffer*size) and y <= y_range[1]+(buffer*size):
+                return True
+
+    
 
 class OBJECT:
     def __init__(self, x, y, image, size):
@@ -142,28 +162,14 @@ class Enemy:
     def coords_to_avoid(self, coord):
         #Start with a list of all other enemies, and eventually objects,  that exist on the map
                 
-        COORD_List = []
+        # COORD_List = []
         curr = (self.x, self.y, self.size/2)
         Big_List = Coord_List + Object_Coords
         COORD_List = [x for x in Big_List if x!= curr]
-                       
-        for x in COORD_List:
-            x_range = []
-            y_range = []
-            left_x = x[0] - x[2]
-            right_x = x[0] + x[2]
-            high_y = x[1] - x[2]
-            low_y = x[1] + x[2]
-            x_range.append(left_x)
-            x_range.append(right_x)
-            y_range.append(high_y)
-            y_range.append(low_y)
-            
-
-            if coord[0] >=x_range[0]-(.3*self.size) and coord[0] <= x_range[1]+(.3*self.size):
-                if coord[1] >= y_range[0]-(.3*self.size) and coord[1] <= y_range[1]+(.3*self.size):
-                    return True 
         
+        if Collide(coord[0], coord[1], self.size, .3, 0,COORD_List)==True:
+            return True                    
+                
         return False
                
         
@@ -413,68 +419,30 @@ class Link:
         curr = (self.x, self.y, self.size/2)      
         Enemy_COORD_List = [x for x in Coord_List]
         Object_Coord_List = [x for x in Object_Coords if x != curr]
-        
-        for x in Object_Coord_List:
-            x_range = []
-            y_range = []
-            left_x = x[0] - x[2]
-            right_x = x[0] + x[2]
-            high_y = x[1] - x[2]
-            low_y = x[1] + x[2]
-            x_range.append(left_x)
-            x_range.append(right_x)
-            y_range.append(high_y)
-            y_range.append(low_y)
-            
-            if coord[0] >=x_range[0]-(.3*self.size) and coord[0] <= x_range[1]+(.3*self.size):
-                if coord[1] >= y_range[0]-(.3*self.size) and coord[1] <= y_range[1]+(.3*self.size):
-                    return True 
-        
-        for x in Enemy_COORD_List:
-            x_range = []
-            y_range = []
-            left_x = x[0] - x[2]
-            right_x = x[0] + x[2]
-            high_y = x[1] - x[2]
-            low_y = x[1] + x[2]
-            x_range.append(left_x)
-            x_range.append(right_x)
-            y_range.append(high_y)
-            y_range.append(low_y)
+        if Collide(coord[0], coord[1], self.size, .3, 0, Object_Coord_List)== True:
+           
+            return True          
 
-            if coord[0] >=x_range[0]-(.3*self.size) and coord[0] <= x_range[1]+(.3*self.size):
-                if coord[1] >= y_range[0]-(.3*self.size) and coord[1] <= y_range[1]+(.3*self.size):
-                    if self.invincible == False:
-                        return 99
+        if Collide(coord[0], coord[1], self.size, .3, 0, Enemy_COORD_List) == True:
+        
+            if self.invincible == False:
+                return 99
+        
         return False
     
     def non_moving_check(self):
         #When Link is not invincible and not moving, checks if he is inside a monster, or near a monster...
-        #Sensitive range
+        
+        if Collide(self.x, self.y, self.size, .35, 0, Coord_List) == True:
+       
+            if self.invincible == False:
 
-        for x in Coord_List:
-                        
-            x_range = []
-            y_range = []
-            left_x = x[0] - x[2]
-            right_x = x[0] + x[2]
-            high_y = x[1] - x[2]
-            low_y = x[1] + x[2]
-            x_range.append(left_x)
-            x_range.append(right_x)
-            y_range.append(high_y)
-            y_range.append(low_y)          
-            
-            if self.x >=x_range[0]-(.35*self.size) and self.x <= x_range[1]+(.35*self.size):
-                if self.y >= y_range[0]-(.35*self.size) and self.y <= y_range[1]+(.35*self.size):
-                    if self.invincible == False:
+                self.health -=.01
+                self.health = round(self.health,2)
+                if self.health <=0:
+                    print('Game Over')
 
-                        self.health -=.01
-                        self.health = round(self.health,2)
-                        if self.health <=0:
-                            print('Game Over')
-
-                            return sys.exit() 
+                    return sys.exit() 
         return
     
     def player_enemy_collision(self):
@@ -482,28 +450,15 @@ class Link:
         
         curr = (self.new_x, self.new_y, self.size/2)    
         Obj_Coords = [x for x in Object_Coords if x != curr]                       
-                
-        for x in Obj_Coords:
-              
-            x_range = []
-            y_range = []
-            left_x = x[0] - x[2]
-            right_x = x[0] + x[2]
-            high_y = x[1] - x[2]
-            low_y = x[1] + x[2]
-            x_range.append(left_x)
-            x_range.append(right_x)
-            y_range.append(high_y)
-            y_range.append(low_y)            
-            
-            if self.new_x >=x_range[0]-(.3*self.size) and self.new_x <= x_range[1]+(.3*self.size):
-                if self.new_y >= y_range[0]-(.3*self.size) and self.new_y <= y_range[1]+(.3*self.size):                                                           
-                    return True
         
+        if Collide(self.new_x, self.new_y, self.size, .3, 0, Obj_Coords)== True:
+            return True 
+                       
         if self.new_y > HEIGHT-self.size or self.new_y <0+self.size or self.new_x > WIDTH - self.size or self.new_x <0 + self.size:
             return True
-
+        
         return         
+
     def configure_direction(self):
         if self.up == True:
             self.image = link_up
@@ -518,8 +473,7 @@ class Link:
             
         if self.left == True:
             self.image = link_left
-            
-
+        
         return self.image        
 
     def set_player_direction(self,direction):
@@ -769,7 +723,6 @@ while running:
         index +=1
         length -=1    
     
-
     #implement function to create correct image based on direction
 
     player.configure_direction()
@@ -787,99 +740,61 @@ while running:
     # Staying inside the enemy object
     player.non_moving_check()
 
+    #Check if sword hits enemy, check for knockback
     Collision = False     
     for enemy in enemy_list:
                         
         enemy_hit = False
-                
+        pos_1 = []        
         pos = (enemy.x, enemy.y, enemy.size/2)
-        x_range = []
-        y_range = []
-        left_x = pos[0] - pos[2]
-        right_x = pos[0] + pos[2]
-        high_y = pos[1] - pos[2]
-        low_y = pos[1] + pos[2]
-        x_range.append(left_x)
-        x_range.append(right_x)
-        y_range.append(high_y)
-        y_range.append(low_y)
-        
-        if sword_pos[0] >=x_range[0] and sword_pos[0] <= x_range[1]:
-            if sword_pos[1] >= y_range[0] and sword_pos[1] <= y_range[1]:
-                
-                #temp variables for projected direction if enemy is hit
-                enemy_new_x = enemy.x
-                enemy_new_y = enemy.y
+        pos_1.append(pos)
 
-                if player.up == True:
-                    enemy_new_y -= enemy.speed *30
-                if player.down == True:
-                    enemy_new_y += enemy.speed *30
-                if player.right == True:
-                    enemy_new_x += enemy.speed *30
-                if player.left == True:
-                    enemy_new_x -= enemy.speed *30
+        if Collide(sword_pos[0], sword_pos[1], 0,0,0, pos_1)==True:
+
+            enemy_new_x = enemy.x
+            enemy_new_y = enemy.y
+
+            if player.up == True:
+                enemy_new_y -= enemy.speed *30
+            if player.down == True:
+                enemy_new_y += enemy.speed *30
+            if player.right == True:
+                enemy_new_x += enemy.speed *30
+            if player.left == True:
+                enemy_new_x -= enemy.speed *30
                 
                 #if projected coordinates do not hit walls
-                if enemy_new_y < HEIGHT-enemy.size and enemy_new_y >0+enemy.size \
-                    and enemy_new_x < WIDTH - enemy.size and enemy_new_x >0 + enemy.size:
-                    #Compare to all objects except Link
-                    for x in Object_Coords[1:]:
-                        x_range = []
-                        y_range = []
-                        left_x = x[0] - x[2]
-                        right_x = x[0] + x[2]
-                        high_y = x[1] - x[2]
-                        low_y = x[1] + x[2]
-                        x_range.append(left_x)
-                        x_range.append(right_x)
-                        y_range.append(high_y)
-                        y_range.append(low_y)
-                        #if OBJECT is hit
-                        if enemy_new_x >=x_range[0]-(.3*enemy.size) and enemy_new_x <= x_range[1]+(.3*enemy.size):
-                            if enemy_new_y >= y_range[0]-(.3*enemy.size) and enemy_new_y <= y_range[1]+(.3*enemy.size):
-                                Collision = True 
-
-                        #Check if other enemies other than self are hit
-                    for x in Coord_List:
-                        
-                        x_range = []
-                        y_range = []
-                        left_x = x[0] - x[2]
-                        right_x = x[0] + x[2]
-                        high_y = x[1] - x[2]
-                        low_y = x[1] + x[2]
-                        x_range.append(left_x)
-                        x_range.append(right_x)
-                        y_range.append(high_y)
-                        y_range.append(low_y)
-                        #if Enemy is hit
-                        if enemy_new_x >=x_range[0]-(.3*enemy.size) and enemy_new_x <= x_range[1]+(.3*enemy.size):
-                            if enemy_new_y >= y_range[0]-(.3*enemy.size) and enemy_new_y <= y_range[1]+(.3*enemy.size):
-                                Collision = True 
-
-                    if Collision == False:
-                        enemy.x = enemy_new_x
-                        enemy.y = enemy_new_y
-                        print(enemy.x, enemy.y)
-                        screen.blit(enemy.image, enemy.rect)
+            if enemy_new_y < HEIGHT-enemy.size and enemy_new_y >0+enemy.size \
+                and enemy_new_x < WIDTH - enemy.size and enemy_new_x >0 + enemy.size:
+                #Compare to all objects except Link
+                if Collide(enemy_new_x, enemy_new_y, enemy.size, .3, 1, Object_Coords)==True:
                 
-                enemy_hit = True 
+                    Collision = True 
 
-            if enemy_hit == True:
-                if enemy.health >0:
-                    
-                    enemy.health -=1
-                    print(enemy.health)
+                    #Check if other enemies other than self are hit
+                if Collide(enemy_new_x, enemy_new_y, enemy.size, .3, 0, Coord_List)== True:
+                
+                    Collision = True 
+
+                if Collision == False:
+                    enemy.x = enemy_new_x
+                    enemy.y = enemy_new_y
+                    print(enemy.x, enemy.y)
+                    screen.blit(enemy.image, enemy.rect)
+                
+            enemy_hit = True 
+
+        if enemy_hit == True:
+            if enemy.health >0:
+                
+                enemy.health -=1
+                print(enemy.health)
                      
         if randomize() == True:
             
             enemy.update()
-
         #Sword/Weapon Interaction with enemies
-
-        if enemy.health >0:
-           
+        if enemy.health >0:    
             screen.blit(enemy.image, enemy.rect)
 
         if enemy.health <=0:
