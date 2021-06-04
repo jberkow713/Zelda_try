@@ -741,8 +741,9 @@ while running:
     player.non_moving_check()
 
     #Check if sword hits enemy, check for knockback
-    Collision = False     
+        
     for enemy in enemy_list:
+        Collision = False 
                         
         enemy_hit = False
         pos_1 = []        
