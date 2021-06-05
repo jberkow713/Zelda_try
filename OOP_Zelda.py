@@ -23,6 +23,7 @@ RED = (255,0,0)
 GREEN = (0,255,0)
 BLUE = (0,0,255)
 PURPLE = (255,0,255)
+
 Links_Pos = []
 
 sword_pos = (0,0) 
@@ -104,9 +105,7 @@ def Collide(x, y, size, buffer, starting_position, list):
 
         if x >=x_range[0]-(buffer*size) and x <= x_range[1]+(buffer*size):
             if y >= y_range[0]-(buffer*size) and y <= y_range[1]+(buffer*size):
-                return True
-
-    
+                return True    
 
 class OBJECT:
     def __init__(self, x, y, image, size):
@@ -150,7 +149,6 @@ class Enemy:
             if self.type == k:
                 return v
 
-
     def create_stats(self):
         
         self.speed = random.randint(5,7)
@@ -160,9 +158,8 @@ class Enemy:
             self.invisible = True 
         
     def coords_to_avoid(self, coord):
-        #Start with a list of all other enemies, and eventually objects,  that exist on the map
-                
-        # COORD_List = []
+        #Start with a list of all other enemies, and eventually objects,  that exist on the map              
+        
         curr = (self.x, self.y, self.size/2)
         Big_List = Coord_List + Object_Coords
         COORD_List = [x for x in Big_List if x!= curr]
@@ -178,11 +175,12 @@ class Enemy:
         
         Links_Position = Links_Pos[-1]
 
-        distance_to_link = math.sqrt((Links_Position[0]-self.rect.center[0])**2 + (Links_Position[1]-self.rect.center[1])**2)
-        #Want the enemy at this point, to calculate which direction will bring it closer to Link by the greatest amount
-        
+        distance_to_link = math.sqrt((Links_Position[0]-self.rect.center[0])**2 +\
+            (Links_Position[1]-self.rect.center[1])**2)
+        #Want the enemy at this point, to calculate which direction will bring it closer to Link by the greatest amount        
         if distance_to_link <((WIDTH+HEIGHT) * .5) /self.aggressiveness:
             Attacking = True
+        
         else:
             Attacking = False    
                 
@@ -202,7 +200,7 @@ class Enemy:
                         if self.coords_to_avoid((current_x, current_y)) == False:
             
                             distances.append((current_x , current_y))
-                    else:
+                    else:                        
                         distances.append((10000,10000))    
                 
                 if x == 'down':
@@ -291,7 +289,6 @@ class Enemy:
                         self.rect.center = (self.x, self.y)
                 
                 else:
-
                     self.y += self.speed
                     self.x +=0
                     self.rect.center = (self.x, self.y) 
@@ -310,7 +307,6 @@ class Enemy:
                         self.y = current_y
                         self.rect.center = (self.x, self.y)
                 else:
-
                     self.y -= self.speed
                     self.x +=0
                     self.rect.center = (self.x, self.y)                     
@@ -344,11 +340,11 @@ class Enemy:
                         self.x = current_x
                         self.y = current_y                                                
                         self.rect.center = (self.x, self.y)
-                else:
-                    
+                else:                    
                     self.y += 0
                     self.x -= self.speed 
-                    self.rect.center = (self.x, self.y) 
+                    self.rect.center = (self.x, self.y)
+
 class Sword:
     def __init__(self, owner):
         self.owner = owner
@@ -357,8 +353,7 @@ class Sword:
         self.y = -1000
         self.size = SWORD_WIDTH
         self.rect = self.image.get_rect()
-        self.rect.center = (self.x, self.y)
-        
+        self.rect.center = (self.x, self.y)        
 
     def load_sword(self):
         if self.owner.direction()=='UP':
@@ -412,15 +407,12 @@ class Link:
             return 'RIGHT'            
     def coords_to_avoid(self, coord):
         #When Link is not invincible, makes sure he does not move over objects, or enemies
-        #True if run into object, 
-        #99 if not run into object but run into enemy
-        #False if not run into any of them
-        
+        # Return 99 if runs into an enemy
+                
         curr = (self.x, self.y, self.size/2)      
         Enemy_COORD_List = [x for x in Coord_List]
         Object_Coord_List = [x for x in Object_Coords if x != curr]
-        if Collide(coord[0], coord[1], self.size, .3, 0, Object_Coord_List)== True:
-           
+        if Collide(coord[0], coord[1], self.size, .3, 0, Object_Coord_List)== True:           
             return True          
 
         if Collide(coord[0], coord[1], self.size, .3, 0, Enemy_COORD_List) == True:
@@ -465,12 +457,10 @@ class Link:
             self.image.set_colorkey(WHITE)
         if self.down == True:
             self.image = link_down
-            self.image.set_colorkey(WHITE)
-            
+            self.image.set_colorkey(WHITE)            
         if self.right == True:
             self.image = link_right
-            self.image.set_colorkey(WHITE)
-            
+            self.image.set_colorkey(WHITE)            
         if self.left == True:
             self.image = link_left
         
@@ -586,7 +576,8 @@ class Link:
 
                         self.x = self.new_x
                         self.y = self.new_y                                     
-                self.set_player_direction('DOWN') 
+                self.set_player_direction('DOWN')
+
             if keys[pygame.K_RIGHT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_LEFT]:
                     
                 self.new_x += player_speed
@@ -614,6 +605,7 @@ class Link:
                         self.x = self.new_x
                         self.y = self.new_y                               
                 self.set_player_direction('RIGHT')
+
             if keys[pygame.K_LEFT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT]:
 
                 self.new_x -= player_speed
@@ -639,7 +631,8 @@ class Link:
 
                         self.x = self.new_x
                         self.y = self.new_y                         
-                self.set_player_direction('LEFT')            
+                self.set_player_direction('LEFT')
+
             if keys[pygame.K_RETURN]:
                 global sword_pos
 
@@ -662,10 +655,10 @@ class Link:
                 if self.left:
                     self.sword.x = self.x -.5*self.size
                     self.sword.y = self.y             
-                    sword_pos = (self.x - SWORD_WIDTH), self.y 
-                
-                
-                
+                    sword_pos = (self.x - SWORD_WIDTH), self.y                
+
+#TODO Create Board Mapping function                 
+
 player = Link()
 sword = Sword(player)
 player.sword = sword
@@ -683,34 +676,30 @@ Tree4 = OBJECT(625,355, Mountain, 50)
 # Tree5 = OBJECT(50,50, Mountain, 150)
 Tree6 = OBJECT(900,900, Mountain, 150)
 
-
 running = True
 while running:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            sys.exit()
-    
+            sys.exit()    
 
     if event.type == pygame.KEYDOWN:
         
         player.update()
-        
-    #this is the invincible check after player moves or is hit
-    
+
+    #this is the invincible check after player moves or is hit    
     if player.invincible:
         player.invincible_animation_count += 1
         if player.invincible_animation_count >= 100:
             player.invincible_animation_count = 0
             player.invincible = False
 
-          
     #Placeholder for now, when he dies
     if player.health == 0:
         sys.exit()
         
     screen.fill(GROUND_COLOR)
-           
+
     Object_Coords[0] = (player.x, player.y, player.size/2)
 
     length = len(enemy_list)
@@ -721,13 +710,12 @@ while running:
         Coord_List[index] =  (curr.x, curr.y, curr.size/2)     
        
         index +=1
-        length -=1    
+        length -=1  
     
-    #implement function to create correct image based on direction
-
+    #implement function to create correct player image based on direction
     player.configure_direction()
-    
     screen.blit(player.image, player.rect)
+
     #Sword Graphics
     sword.rect = sword.image.get_rect()
     sword.rect.center = (sword.x, sword.y)
@@ -737,15 +725,15 @@ while running:
     sword.y = -1000
    
     #This is the invincible check when a player is not moving, to prevent
-    # Staying inside the enemy object
+    # Staying inside the enemy object without taking damage
     player.non_moving_check()
 
-    #Check if sword hits enemy, check for knockback
-        
+    #Check if sword hits enemy, check for knockback        
     for enemy in enemy_list:
+        
         Collision = False 
-                        
         enemy_hit = False
+        
         pos_1 = []        
         pos = (enemy.x, enemy.y, enemy.size/2)
         pos_1.append(pos)
@@ -764,15 +752,16 @@ while running:
             if player.left == True:
                 enemy_new_x -= enemy.speed *30
                 
-                #if projected coordinates do not hit walls
+                #if projected coordinates from sword bounceback do not hit walls
             if enemy_new_y < HEIGHT-enemy.size and enemy_new_y >0+enemy.size \
                 and enemy_new_x < WIDTH - enemy.size and enemy_new_x >0 + enemy.size:
-                #Compare to all objects except Link
+                
+                #Compare knockback all objects except Link
                 if Collide(enemy_new_x, enemy_new_y, enemy.size, .3, 1, Object_Coords)==True:
                 
                     Collision = True 
 
-                    #Check if other enemies other than self are hit
+                    #Compare knockback to other enemies
                 if Collide(enemy_new_x, enemy_new_y, enemy.size, .3, 0, Coord_List)== True:
                 
                     Collision = True 
@@ -789,12 +778,11 @@ while running:
             if enemy.health >0:
                 
                 enemy.health -=1
-                print(enemy.health)
-                     
+                                     
         if randomize() == True:
             
             enemy.update()
-        #Sword/Weapon Interaction with enemies
+        
         if enemy.health >0:    
             screen.blit(enemy.image, enemy.rect)
 
@@ -807,11 +795,10 @@ while running:
     
     for x in object_list:
         screen.blit(x.image, x.rect)
-    font = pygame.font.SysFont("comicsans", 40, True)
-    
+
+    font = pygame.font.SysFont("comicsans", 40, True)    
     text = font.render(f'Health Remaining: {round(player.health,2)}', 1, RED) # Arguments are: text, anti-aliasing, color
-    screen.blit(text, (10, 10))
-    
+    screen.blit(text, (10, 10))    
 
     pygame.display.flip()
 
