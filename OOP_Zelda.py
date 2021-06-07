@@ -665,6 +665,16 @@ sword = Sword(player)
 player.sword = sword
 def room_1():
 
+    wallsize = 50
+    for i in range (2*int(WIDTH/wallsize)):
+        OBJECT(i*wallsize/2, 0+wallsize/2, WALL, wallsize)
+    for i in range (2*int(WIDTH/wallsize)):
+        OBJECT(i*wallsize/2, HEIGHT - wallsize/2, WALL, wallsize)
+    for i in range (2*int(HEIGHT/wallsize)):
+        OBJECT(0+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
+    for i in range (2*int(HEIGHT/wallsize)):
+        OBJECT(WIDTH-wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
+
     enemy1 = Enemy(250,250, ghost, 'ghost')
     enemy2 = Enemy(1250,250,ghost, 'ghost')
     enemy3 = Enemy(250,750,ghost, 'ghost')
@@ -675,15 +685,7 @@ def room_1():
     Tree2 = OBJECT(550,500, Tree, 50)
     Tree3 = OBJECT(605,555, Tree, 50)
     Tree4 = OBJECT(625,355, Mountain, 50)
-    # Tree5 = OBJECT(50,50, Mountain, 150)
-    # Tree6 = OBJECT(900,900, Mountain, 150)
-    wallsize = 100
-    Wall1 = OBJECT(50,50, WALL, 100)
-    Wall2 = OBJECT(650,50, WALL, 100)
-    Wall3 = OBJECT(850,0+.5*wallsize, WALL, wallsize)
-    Wall4 = OBJECT(650,HEIGHT-.5*wallsize, WALL, wallsize)
-    Wall5 = OBJECT(850,HEIGHT-.5*wallsize, WALL, wallsize)
-
+    
     return 
 
 room_1()
@@ -723,9 +725,7 @@ while running:
             player.y = 150
             Object_Coords.append((player.x, player.y))
             room_1()
-    # print(Object_Coords)
-
-
+    
     #this is the invincible check after player moves or is hit    
     if player.invincible:
         player.invincible_animation_count += 1
