@@ -689,6 +689,7 @@ def room_1():
     return 
 
 room_1()
+#TODO create bunch of different rooms, customize each to a specific screen, load in a screen, and then randomize the room and enemy types
 running = True
 while running:
     clock.tick(FPS)
