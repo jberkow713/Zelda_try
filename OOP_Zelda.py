@@ -72,7 +72,8 @@ sword_left = pygame.transform.scale(sword_left, (SWORD_WIDTH, SWORD_HEIGHT))
 sword_right = pygame.image.load("Link_Sword_Right.png")
 sword_right = pygame.transform.scale(sword_right, (SWORD_WIDTH, SWORD_HEIGHT))
 
-
+WALL= pygame.image.load("Zelda_Wall.jpg")
+WALL = pygame.transform.scale(WALL, (100, 100))
 
 
 ghost = pygame.image.load("ghost.png").convert_alpha()
@@ -675,7 +676,14 @@ def room_1():
     Tree3 = OBJECT(605,555, Tree, 50)
     Tree4 = OBJECT(625,355, Mountain, 50)
     # Tree5 = OBJECT(50,50, Mountain, 150)
-    Tree6 = OBJECT(900,900, Mountain, 150)
+    # Tree6 = OBJECT(900,900, Mountain, 150)
+    wallsize = 100
+    Wall1 = OBJECT(50,50, WALL, 100)
+    Wall2 = OBJECT(650,50, WALL, 100)
+    Wall3 = OBJECT(850,0+.5*wallsize, WALL, wallsize)
+    Wall4 = OBJECT(650,HEIGHT-.5*wallsize, WALL, wallsize)
+    Wall5 = OBJECT(850,HEIGHT-.5*wallsize, WALL, wallsize)
+
     return 
 
 room_1()
@@ -700,9 +708,10 @@ while running:
             #list for enemy movement
             enemy_list.clear()
             object_list.clear()
+            player.y = HEIGHT - 150 
+            Object_Coords.append((player.x, player.y))
             room_1()
-            
-            player.y = HEIGHT - 150  
+                          
 
     if player.x == WIDTH//2:
         if player.y > HEIGHT-150:
@@ -711,9 +720,10 @@ while running:
             #list for enemy movement
             enemy_list.clear()
             object_list.clear()
-            room_1()
             player.y = 150
-    
+            Object_Coords.append((player.x, player.y))
+            room_1()
+    # print(Object_Coords)
 
 
     #this is the invincible check after player moves or is hit    
