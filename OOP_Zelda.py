@@ -197,10 +197,10 @@ class Enemy:
                     current_y -= self.speed
                     current_x += 0
                     
-                    if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
-                        if self.coords_to_avoid((current_x, current_y)) == False:
+                    # if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                    if self.coords_to_avoid((current_x, current_y)) == False:
             
-                            distances.append((current_x , current_y))
+                        distances.append((current_x , current_y))
                     else:                        
                         distances.append((10000,10000))    
                 
@@ -211,9 +211,9 @@ class Enemy:
                     current_y += self.speed
                     current_x +=0
 
-                    if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
-                        if self.coords_to_avoid((current_x, current_y)) == False:
-                            distances.append((current_x , current_y))
+                    # if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                    if self.coords_to_avoid((current_x, current_y)) == False:
+                        distances.append((current_x , current_y))
                     else:
                         distances.append((10000,10000))
 
@@ -224,9 +224,9 @@ class Enemy:
                     current_y +=0
                     current_x-= self.speed
                     
-                    if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
-                        if self.coords_to_avoid((current_x, current_y)) == False:
-                            distances.append((current_x , current_y))
+                    # if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                    if self.coords_to_avoid((current_x, current_y)) == False:
+                        distances.append((current_x , current_y))
                         
                     else:                        
                         distances.append((10000,10000))
@@ -238,9 +238,9 @@ class Enemy:
                     current_y +=0
                     current_x += self.speed
                     
-                    if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
-                        if self.coords_to_avoid((current_x, current_y)) == False:                
-                            distances.append((current_x , current_y))
+                    # if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
+                    if self.coords_to_avoid((current_x, current_y)) == False:                
+                        distances.append((current_x , current_y))
                         
                     else:
                         distances.append((10000,10000))
@@ -282,12 +282,11 @@ class Enemy:
                 current_y -= self.speed
                 current_x +=0
                 
-                if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
-                    if self.coords_to_avoid((current_x, current_y)) == False:
+                if self.coords_to_avoid((current_x, current_y)) == False:
 
-                        self.x = current_x
-                        self.y = current_y                                           
-                        self.rect.center = (self.x, self.y)
+                    self.x = current_x
+                    self.y = current_y                                           
+                    self.rect.center = (self.x, self.y)
                 
                 else:
                     self.y += self.speed
@@ -300,13 +299,12 @@ class Enemy:
                 current_y = self.y
                 current_y += self.speed
                 current_x +=0
+                
+                if self.coords_to_avoid((current_x, current_y)) == False:
 
-                if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
-                    if self.coords_to_avoid((current_x, current_y)) == False:
-
-                        self.x = current_x
-                        self.y = current_y
-                        self.rect.center = (self.x, self.y)
+                    self.x = current_x
+                    self.y = current_y
+                    self.rect.center = (self.x, self.y)
                 else:
                     self.y -= self.speed
                     self.x +=0
@@ -316,14 +314,13 @@ class Enemy:
                 current_x = self.x
                 current_y = self.y
                 current_y +=0
-                current_x -= self.speed
+                current_x -= self.speed                
                 
-                if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
-                    if self.coords_to_avoid((current_x, current_y)) == False:
+                if self.coords_to_avoid((current_x, current_y)) == False:
 
-                        self.x = current_x
-                        self.y = current_y
-                        self.rect.center = (self.x, self.y)
+                    self.x = current_x
+                    self.y = current_y
+                    self.rect.center = (self.x, self.y)
                 else:
                     self.y += 0
                     self.x += self.speed 
@@ -333,14 +330,13 @@ class Enemy:
                 current_x = self.x
                 current_y = self.y
                 current_y +=0
-                current_x += self.speed
+                current_x += self.speed                
                 
-                if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
-                    if self.coords_to_avoid((current_x, current_y)) == False:
+                if self.coords_to_avoid((current_x, current_y)) == False:
 
-                        self.x = current_x
-                        self.y = current_y                                                
-                        self.rect.center = (self.x, self.y)
+                    self.x = current_x
+                    self.y = current_y                                                
+                    self.rect.center = (self.x, self.y)
                 else:                    
                     self.y += 0
                     self.x -= self.speed 
@@ -674,7 +670,7 @@ def room_1():
         OBJECT(0+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
     for i in range (2*int(HEIGHT/wallsize)):
         OBJECT(WIDTH-wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
-
+    
     enemy1 = Enemy(250,250, ghost, 'ghost')
     enemy2 = Enemy(1250,250,ghost, 'ghost')
     enemy3 = Enemy(250,750,ghost, 'ghost')
