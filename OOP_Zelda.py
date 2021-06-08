@@ -675,16 +675,25 @@ def room_1():
     for i in range (2*int(HEIGHT/wallsize)):
         OBJECT(WIDTH-wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
     
+
     enemy1 = Enemy(250,250, ghost, 'ghost')
     enemy2 = Enemy(1250,250,ghost, 'ghost')
     enemy3 = Enemy(250,750,ghost, 'ghost')
     enemy4 = Enemy(1250,750,ghost, 'ghost')
     enemy5 = Enemy(1000, 250,ghost, 'ghost')
     enemy6 = Enemy(1000, 500,ghost, 'ghost')
-    Tree1 = OBJECT(500,500, Tree, 50)
-    Tree2 = OBJECT(550,500, Tree, 50)
-    Tree3 = OBJECT(605,555, Tree, 50)
-    Tree4 = OBJECT(625,355, Mountain, 50)
+    for i in range(8):
+        OBJECT(500+i*25, 400, Tree, 50)
+    for i in range(8):
+        OBJECT(500+i*25, 550, Tree, 50)
+    for i in range(8):
+        OBJECT(500+i*25, 700, Tree, 50)
+    for i in range(8):
+        OBJECT(500+i*25, 850, Tree, 50)            
+    # Tree1 = OBJECT(500,500, Tree, 50)
+    # Tree2 = OBJECT(550,500, Tree, 50)
+    # Tree3 = OBJECT(605,555, Tree, 50)
+    # Tree4 = OBJECT(625,355, Mountain, 50)
     
     return 
 
