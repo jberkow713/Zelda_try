@@ -142,7 +142,11 @@ class Enemy:
         Coord_List.append((self.x, self.y))
         self.type = type 
         self.health = self.get_health()
-        self.hit = False  
+        self.hit = False
+        self.down = True #enemy faces down by default
+        self.up = False
+        self.left = False
+        self.right = False  
 
     def get_health(self):
         health_dict = {'ghost': 40, 'dragon':200, 'centaur':60}
@@ -169,8 +173,17 @@ class Enemy:
             return True                    
                 
         return False
-               
-        
+    def get_direction(self):
+
+        if self.up == True:
+            return 'UP'
+        if self.down == True:
+            return 'DOWN'
+        if self.left == True:
+            return 'LEFT'
+        if self.right == True:
+            return 'RIGHT'     
+           
     def update(self):
         #Update enemy position
         
@@ -200,7 +213,7 @@ class Enemy:
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
                 
-                            distances.append((current_x , current_y))
+                            distances.append((current_x , current_y, 'up'))
                         else:                        
                             distances.append((10000,10000))    
                 
@@ -213,7 +226,7 @@ class Enemy:
 
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
-                            distances.append((current_x , current_y))
+                            distances.append((current_x , current_y, 'down'))
                         else:
                             distances.append((10000,10000))
 
@@ -226,7 +239,7 @@ class Enemy:
                     
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:
-                            distances.append((current_x , current_y))
+                            distances.append((current_x , current_y, 'left'))
                             
                         else:                        
                             distances.append((10000,10000))
@@ -240,7 +253,7 @@ class Enemy:
                     
                     if current_y < HEIGHT-self.size and current_y >0+self.size and current_x < WIDTH - self.size and current_x >0 + self.size:
                         if self.coords_to_avoid((current_x, current_y)) == False:                
-                            distances.append((current_x , current_y))
+                            distances.append((current_x , current_y, 'right'))
                             
                         else:
                             distances.append((10000,10000))
@@ -253,6 +266,7 @@ class Enemy:
                 distance_to_link.append(distance)
             #Dictionary with possible directions and their corresponding distances
             closest_dict = dict(zip(distances, distance_to_link))
+            
             #no movement if trapped
             if len(closest_dict)==0:
                 self.rect.center = (self.x, self.y)
@@ -270,7 +284,29 @@ class Enemy:
                     self.y = closest[1]
 
                     self.rect.center = (self.x, self.y)
-                       
+                    
+                    direction = closest[2]
+                    if direction == 'up':
+                        self.down = False  
+                        self.up = True
+                        self.left = False
+                        self.right = False
+                    elif direction == 'down':
+                        self.down = True   
+                        self.up = False 
+                        self.left = False
+                        self.right = False
+                    elif direction == 'right':
+                        self.down = False    
+                        self.up = False 
+                        self.left = False  
+                        self.right = True
+                    elif direction == 'left':
+                        self.down = False    
+                        self.up = False 
+                        self.left = True 
+                        self.right = False                      
+
         
         if Attacking == False:
                 
@@ -293,7 +329,11 @@ class Enemy:
                         self.y += self.speed
                         self.x +=0
                         self.rect.center = (self.x, self.y) 
-                    
+                
+                self.down = False  
+                self.up = True
+                self.left = False
+                self.right = False    
 
             if self.direction == 'down':
                 current_x = self.x
@@ -312,6 +352,11 @@ class Enemy:
                         self.x +=0
                         self.rect.center = (self.x, self.y)                     
 
+                self.down = True   
+                self.up = False 
+                self.left = False
+                self.right = False 
+
             if self.direction == 'left':
                 current_x = self.x
                 current_y = self.y
@@ -327,7 +372,11 @@ class Enemy:
                     else:
                         self.y += 0
                         self.x += self.speed 
-                        self.rect.center = (self.x, self.y) 
+                        self.rect.center = (self.x, self.y)
+                self.down = False    
+                self.up = False 
+                self.left = True 
+                self.right = False          
                         
             if self.direction == 'right':
                 current_x = self.x
@@ -345,6 +394,11 @@ class Enemy:
                         self.y += 0
                         self.x -= self.speed 
                         self.rect.center = (self.x, self.y)
+                
+                self.down = False    
+                self.up = False 
+                self.left = False  
+                self.right = True          
 
 class Sword:
     def __init__(self, owner):
@@ -663,6 +717,7 @@ class Link:
 player = Link()
 sword = Sword(player)
 player.sword = sword
+
 def room_1():
 
     wallsize = 50
@@ -768,6 +823,10 @@ while running:
     #Check if sword hits enemy, check for knockback        
     for enemy in enemy_list:
         
+        #TODO implement Enemy Projectile function, call it here
+        # enemy.get_direction()
+        #Get direction now tells enemies direction, to be used in projectile function
+
         Collision = False 
         enemy_hit = False
         
