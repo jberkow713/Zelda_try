@@ -138,11 +138,11 @@ class Projectile:
         self.x = x
         self.y = y
         self.image = image
+        self.image.set_colorkey(WHITE)
         self.direction = direction 
         self.index = index
         self.size = 50
-        self.speed = 10  
-        self.image.set_colorkey(WHITE)
+        self.speed = 10
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
 
@@ -207,12 +207,30 @@ class Enemy:
         #checking if enemy in range to shoot
         if abs(self.x - other.x) <15:
             if abs(self.y - other.y) >self.size*1.5:
-                self.shooting = True
-                return True, self.get_direction()  
+                if self.y > other.y:
+
+                    if self.get_direction() =='UP':
+                        self.shooting = True
+                        return True, self.get_direction()
+                if self.y < other.y:
+                    if self.get_direction() =='DOWN':
+                        self.shooting = True
+                        return True, self.get_direction()
+
         if abs(self.y - other.y) <15:
             if abs(self.x-other.x) > self.size*1.5:
-                self.shooting = True
-                return  True, self.get_direction()
+                if self.x > other.x:
+
+                    if self.get_direction() == 'LEFT':
+
+                        self.shooting = True
+                        return  True, self.get_direction()
+                if self.x < other.x:
+                    if self.get_direction() == 'RIGHT':
+
+                        self.shooting = True
+                        return  True, self.get_direction()
+
     def get_coords_projectile(self, other):
         if self.shooting_check(other):
             coords =  (self.x, self.y, self.shooting_check(other)[1])
