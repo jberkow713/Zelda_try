@@ -72,6 +72,9 @@ sword_left = pygame.transform.scale(sword_left, (SWORD_WIDTH, SWORD_HEIGHT))
 sword_right = pygame.image.load("Link_Sword_Right.png")
 sword_right = pygame.transform.scale(sword_right, (SWORD_WIDTH, SWORD_HEIGHT))
 
+Enemy_Weapon = pygame.image.load("Enemy_Weapon.jpg")
+Enemy_Weapon = pygame.transform.scale(Enemy_Weapon, (50, 50))
+
 WALL= pygame.image.load("Zelda_Wall.jpg")
 WALL = pygame.transform.scale(WALL, (100, 100))
 
@@ -87,6 +90,10 @@ Object_Coords = []
 #list for enemy movement
 enemy_list = []
 object_list = []
+enemy_length = 0
+enemy_index = 0
+
+# projectile_list = [0]*enemy_length
 
 #TODO IMPLEMENT GENERIC COLLISION FUNCTION
 def Collide(x, y, size, buffer, starting_position, list):
@@ -125,6 +132,17 @@ class OBJECT:
         Object_Coords.append((self.x, self.y, self.size/2))
         object_list.append(self)
 
+class Projectile:
+    def __init__(self, x, y, image, direction):
+        #For enemy firing
+        self.x = x
+        self.y = y
+        self.image = image
+        self.direction = direction 
+        self.image.set_colorkey(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.x, self.y)
+
 class Enemy:
     def __init__(self,x,y, image, type):
         
@@ -146,7 +164,15 @@ class Enemy:
         self.down = True #enemy faces down by default
         self.up = False
         self.left = False
-        self.right = False  
+        self.right = False
+        self.shooting = False
+        self.projectile = None
+        self.index = None
+        global enemy_length
+        enemy_length+=1
+        global enemy_index
+        self.index = enemy_index 
+        enemy_index +=1       
 
     def get_health(self):
         health_dict = {'ghost': 40, 'dragon':200, 'centaur':60}
@@ -161,7 +187,34 @@ class Enemy:
         invis_roll = random.randint(0,10)
         if invis_roll > 7:
             self.invisible = True 
-        
+    def shooting_check(self, other):
+        #checking if enemy in range to shoot
+        if abs(self.x - other.x) <10:
+            if abs(self.y - other.y) >self.size*1.5:
+                self.shooting = True
+                return True, self.get_direction()  
+        if abs(self.y - other.y) <10:
+            if abs(self.x-other.x) > self.size*1.5:
+                self.shooting = True
+                return  True, self.get_direction()
+    def get_coords_projectile(self, other):
+        if self.shooting_check(other):
+            coords =  (self.x, self.y, self.shooting_check(other)[1])
+            coord_x = self.x
+            coord_y = self.y  
+            if coords[2] == 'UP':
+                coord_y -= self.size/2
+            elif coords[2] == 'DOWN':
+                coord_y += self.size/2
+            elif coords[2] == 'RIGHT':
+                coord_x += self.size/2
+            elif coords[2] == 'LEFT':
+                coord_x -= self.size/2
+
+            return coord_x, coord_y, coords[2]                
+            
+
+                
     def coords_to_avoid(self, coord):
         #Start with a list of all other enemies, and eventually objects,  that exist on the map              
         
@@ -737,11 +790,16 @@ def room_1():
         OBJECT(500+i*25, 550, Tree, 50)
         OBJECT(500+i*25, 700, Mountain, 50)
         OBJECT(500+i*25, 850, Mountain, 50)            
-        
+    
+    global projectile_list
+    projectile_list = [0]*enemy_length    
+    
     return 
 
 room_1()
+
 #TODO create bunch of different rooms, customize each to a specific screen, load in a screen, and then randomize the room and enemy types
+
 running = True
 while running:
     clock.tick(FPS)
@@ -753,9 +811,7 @@ while running:
         
         player.update()
     
-    #GENERAL IDEA....Except don't just make room_1 everytime, want to randomize the rooms
-    #Going to make an "If_Through_Door" function to determine this, in case some doors are locked
-    #TODO create the randomizing room making function!
+    
     if player.x == WIDTH//2:
         if player.y <150:
             Coord_List.clear()
@@ -765,6 +821,9 @@ while running:
             object_list.clear()
             player.y = HEIGHT - 150 
             Object_Coords.append((player.x, player.y))
+            
+            enemy_length = 0
+            enemy_index = 0
             room_1()
                           
 
@@ -777,6 +836,9 @@ while running:
             object_list.clear()
             player.y = 150
             Object_Coords.append((player.x, player.y))
+            
+            enemy_length = 0
+            enemy_index = 0
             room_1()
     
     #this is the invincible check after player moves or is hit    
@@ -821,11 +883,40 @@ while running:
     player.non_moving_check()
 
     #Check if sword hits enemy, check for knockback        
+    
+     
+   
+    print(projectile_list)
+    #TODO Currently have a projectile list, where each projectile object in the list refers directly to an enemy.index attribute
+    #Now we need to make these projectiles move, in specific direction, as shown in the coords[2] below....
+    #When the projectile object goes off the screen, we want to set the projectile index to 0, and set the enemy.shooting back to 
+    #False for the specific index where the projectile is in the projectile list
+    
     for enemy in enemy_list:
+                    
         
-        #TODO implement Enemy Projectile function, call it here
-        # enemy.get_direction()
-        #Get direction now tells enemies direction, to be used in projectile function
+        
+        if enemy.shooting == False:
+
+            if enemy.get_coords_projectile(player):
+
+                coords = enemy.get_coords_projectile(player)
+                weapon = Projectile(coords[0], coords[1], Enemy_Weapon, coords[2])
+                projectile_list[enemy.index]= weapon
+                enemy.projectile = weapon 
+                enemy.shooting== True
+                  
+                
+                #This will put the projectile initially at the place where it needs to fire from
+                #Need to make a function where then the projectile will move in a specific direction until it goes off map
+                #enemy needs to have his enemy.shooting updated to False ONLY when the specific projectile assigned to him has 
+                # gone off the map
+
+            
+                screen.blit(weapon.image, weapon.rect)
+
+        
+        
 
         Collision = False 
         enemy_hit = False
