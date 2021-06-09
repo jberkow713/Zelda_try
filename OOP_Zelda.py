@@ -133,15 +133,32 @@ class OBJECT:
         object_list.append(self)
 
 class Projectile:
-    def __init__(self, x, y, image, direction):
+    def __init__(self, x, y, image, direction, index):
         #For enemy firing
         self.x = x
         self.y = y
         self.image = image
         self.direction = direction 
+        self.index = index
+        self.size = 50
+        self.speed = 10  
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
+
+    def move_projectile(self):
+        if self.direction == 'UP':
+            self.y -= self.speed 
+        elif self.direction == 'DOWN':
+            self.y += self.speed
+        elif self.direction == 'RIGHT':
+            self.x += self.speed
+        elif self.direction == 'LEFT':
+            self.x -= self.speed
+
+        return self.x, self.y    
+
+
 
 class Enemy:
     def __init__(self,x,y, image, type):
@@ -166,7 +183,6 @@ class Enemy:
         self.left = False
         self.right = False
         self.shooting = False
-        self.projectile = None
         self.index = None
         global enemy_length
         enemy_length+=1
@@ -189,11 +205,11 @@ class Enemy:
             self.invisible = True 
     def shooting_check(self, other):
         #checking if enemy in range to shoot
-        if abs(self.x - other.x) <10:
+        if abs(self.x - other.x) <15:
             if abs(self.y - other.y) >self.size*1.5:
                 self.shooting = True
                 return True, self.get_direction()  
-        if abs(self.y - other.y) <10:
+        if abs(self.y - other.y) <15:
             if abs(self.x-other.x) > self.size*1.5:
                 self.shooting = True
                 return  True, self.get_direction()
@@ -889,22 +905,24 @@ while running:
     print(projectile_list)
     #TODO Currently have a projectile list, where each projectile object in the list refers directly to an enemy.index attribute
     #Now we need to make these projectiles move, in specific direction, as shown in the coords[2] below....
-    #When the projectile object goes off the screen, we want to set the projectile index to 0, and set the enemy.shooting back to 
+    #When the projectile object goes off the screen, we determine this
+    # by checking the projectiles coordinates, 
+    #set it's value to 0 if it goes off screen
+    #   and set the enemy.shooting back to 
     #False for the specific index where the projectile is in the projectile list
     
     for enemy in enemy_list:
                     
         
         
-        if enemy.shooting == False:
+        # if enemy.shooting == False:
 
-            if enemy.get_coords_projectile(player):
+        #     if enemy.get_coords_projectile(player):
 
-                coords = enemy.get_coords_projectile(player)
-                weapon = Projectile(coords[0], coords[1], Enemy_Weapon, coords[2])
-                projectile_list[enemy.index]= weapon
-                enemy.projectile = weapon 
-                enemy.shooting== True
+        #         coords = enemy.get_coords_projectile(player)
+        #         weapon = Projectile(coords[0], coords[1], Enemy_Weapon, coords[2], enemy.index)
+        #         projectile_list[enemy.index]= weapon
+        #         enemy.shooting== True
                   
                 
                 #This will put the projectile initially at the place where it needs to fire from
@@ -913,7 +931,7 @@ while running:
                 # gone off the map
 
             
-                screen.blit(weapon.image, weapon.rect)
+                # screen.blit(weapon.image, weapon.rect)
 
         
         
@@ -970,6 +988,15 @@ while running:
             
             enemy.update()
         
+        if enemy.shooting == False:
+
+            if enemy.get_coords_projectile(player):
+
+                coords = enemy.get_coords_projectile(player)
+                weapon = Projectile(coords[0], coords[1], Enemy_Weapon, coords[2], enemy.index)
+                projectile_list[enemy.index]= weapon
+                enemy.shooting== True
+
         if enemy.health >0:    
             screen.blit(enemy.image, enemy.rect)
 
@@ -982,6 +1009,27 @@ while running:
     
     for x in object_list:
         screen.blit(x.image, x.rect)
+    #Move projectile objects HERE
+    
+    for x in projectile_list:
+        if isinstance(x, Projectile):
+            screen.blit(x.image, x.rect)
+
+            #TODO update weapon's coords
+            x.x, x.y = x.move_projectile()
+            print(x.x, x.y)
+
+            weapon = Projectile(x.x, x.y, Enemy_Weapon, x.direction, x.index)
+            if weapon.x < WIDTH -weapon.size and weapon.x > 0+weapon.size and weapon.y >0+weapon.size and weapon.y < HEIGHT-weapon.size:
+                
+                projectile_list[x.index]= weapon
+            else:
+                projectile_list[x.index]= 0
+                enemy_list[x.index].shooting = False 
+
+
+            #Move projectile, using projectile function in projectile class
+            #blit projectile
 
     font = pygame.font.SysFont("comicsans", 40, True)    
     text = font.render(f'Health Remaining: {round(player.health,2)}', 1, RED) # Arguments are: text, anti-aliasing, color
