@@ -210,11 +210,11 @@ class Enemy:
                 if self.y > other.y:
 
                     if self.get_direction() =='UP':
-                        self.shooting = True
+                        
                         return True, self.get_direction()
                 if self.y < other.y:
                     if self.get_direction() =='DOWN':
-                        self.shooting = True
+                        
                         return True, self.get_direction()
 
         if abs(self.y - other.y) <15:
@@ -223,12 +223,11 @@ class Enemy:
 
                     if self.get_direction() == 'LEFT':
 
-                        self.shooting = True
+                        
                         return  True, self.get_direction()
                 if self.x < other.x:
                     if self.get_direction() == 'RIGHT':
 
-                        self.shooting = True
                         return  True, self.get_direction()
 
     def get_coords_projectile(self, other):
@@ -915,44 +914,18 @@ while running:
     #This is the invincible check when a player is not moving, to prevent
     # Staying inside the enemy object without taking damage
     player.non_moving_check()
-
-    #Check if sword hits enemy, check for knockback        
-    
-     
-   
-    print(projectile_list)
-    #TODO Currently have a projectile list, where each projectile object in the list refers directly to an enemy.index attribute
-    #Now we need to make these projectiles move, in specific direction, as shown in the coords[2] below....
-    #When the projectile object goes off the screen, we determine this
-    # by checking the projectiles coordinates, 
-    #set it's value to 0 if it goes off screen
-    #   and set the enemy.shooting back to 
-    #False for the specific index where the projectile is in the projectile list
-    
+      
     for enemy in enemy_list:
                     
-        
-        
-        # if enemy.shooting == False:
+        if enemy.shooting == False:
 
-        #     if enemy.get_coords_projectile(player):
+            if enemy.get_coords_projectile(player):
 
-        #         coords = enemy.get_coords_projectile(player)
-        #         weapon = Projectile(coords[0], coords[1], Enemy_Weapon, coords[2], enemy.index)
-        #         projectile_list[enemy.index]= weapon
-        #         enemy.shooting== True
-                  
-                
-                #This will put the projectile initially at the place where it needs to fire from
-                #Need to make a function where then the projectile will move in a specific direction until it goes off map
-                #enemy needs to have his enemy.shooting updated to False ONLY when the specific projectile assigned to him has 
-                # gone off the map
-
-            
-                # screen.blit(weapon.image, weapon.rect)
-
-        
-        
+                coords = enemy.get_coords_projectile(player)
+                weapon = Projectile(coords[0], coords[1], Enemy_Weapon, coords[2], enemy.index)
+                projectile_list[enemy.index]= weapon
+                enemy.shooting= True 
+          
 
         Collision = False 
         enemy_hit = False
@@ -1005,16 +978,7 @@ while running:
         if randomize() == True:
             
             enemy.update()
-        
-        if enemy.shooting == False:
-
-            if enemy.get_coords_projectile(player):
-
-                coords = enemy.get_coords_projectile(player)
-                weapon = Projectile(coords[0], coords[1], Enemy_Weapon, coords[2], enemy.index)
-                projectile_list[enemy.index]= weapon
-                enemy.shooting== True
-
+                
         if enemy.health >0:    
             screen.blit(enemy.image, enemy.rect)
 
@@ -1027,15 +991,22 @@ while running:
     
     for x in object_list:
         screen.blit(x.image, x.rect)
-    #Move projectile objects HERE
     
+    #Projectile update and Projectile Collision check 
     for x in projectile_list:
         if isinstance(x, Projectile):
             screen.blit(x.image, x.rect)
+            print(x.x, x.y)
+            pos_1 = []        
+            pos = (player.x, player.y, player.size/2)
+            pos_1.append(pos)
+            if Collide(x.x, x.y, x.size, .3, 0, pos_1)==True:
+                player.health -=.07
 
+            
             #TODO update weapon's coords
             x.x, x.y = x.move_projectile()
-            print(x.x, x.y)
+            
 
             weapon = Projectile(x.x, x.y, Enemy_Weapon, x.direction, x.index)
             if weapon.x < WIDTH -weapon.size and weapon.x > 0+weapon.size and weapon.y >0+weapon.size and weapon.y < HEIGHT-weapon.size:
