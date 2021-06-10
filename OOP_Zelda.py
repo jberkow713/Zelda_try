@@ -211,11 +211,11 @@ class Enemy:
 
                     if self.get_direction() =='UP':
                         
-                        return True, self.get_direction()
+                        return True, 'UP'
                 if self.y < other.y:
                     if self.get_direction() =='DOWN':
                         
-                        return True, self.get_direction()
+                        return True, 'DOWN'
 
         if abs(self.y - other.y) <15:
             if abs(self.x-other.x) > self.size*1.5:
@@ -224,11 +224,11 @@ class Enemy:
                     if self.get_direction() == 'LEFT':
 
                         
-                        return  True, self.get_direction()
+                        return  True, 'LEFT'
                 if self.x < other.x:
                     if self.get_direction() == 'RIGHT':
 
-                        return  True, self.get_direction()
+                        return  True, 'RIGHT'
 
     def get_coords_projectile(self, other):
         if self.shooting_check(other):
@@ -824,6 +824,7 @@ def room_1():
         OBJECT(500+i*25, 700, Mountain, 50)
         OBJECT(500+i*25, 850, Mountain, 50)            
     
+    #resetting projectile list
     global projectile_list
     projectile_list = [0]*enemy_length    
     
@@ -842,8 +843,7 @@ while running:
 
     if event.type == pygame.KEYDOWN:
         
-        player.update()
-    
+        player.update()    
     
     if player.x == WIDTH//2:
         if player.y <150:
@@ -857,8 +857,7 @@ while running:
             
             enemy_length = 0
             enemy_index = 0
-            room_1()
-                          
+            room_1()                          
 
     if player.x == WIDTH//2:
         if player.y > HEIGHT-150:
@@ -914,7 +913,7 @@ while running:
     #This is the invincible check when a player is not moving, to prevent
     # Staying inside the enemy object without taking damage
     player.non_moving_check()
-      
+    #Create projectile objects  
     for enemy in enemy_list:
                     
         if enemy.shooting == False:
@@ -996,17 +995,14 @@ while running:
     for x in projectile_list:
         if isinstance(x, Projectile):
             screen.blit(x.image, x.rect)
-            print(x.x, x.y)
+            
             pos_1 = []        
             pos = (player.x, player.y, player.size/2)
             pos_1.append(pos)
             if Collide(x.x, x.y, x.size, .3, 0, pos_1)==True:
                 player.health -=.07
 
-            
-            #TODO update weapon's coords
             x.x, x.y = x.move_projectile()
-            
 
             weapon = Projectile(x.x, x.y, Enemy_Weapon, x.direction, x.index)
             if weapon.x < WIDTH -weapon.size and weapon.x > 0+weapon.size and weapon.y >0+weapon.size and weapon.y < HEIGHT-weapon.size:
@@ -1015,10 +1011,7 @@ while running:
             else:
                 projectile_list[x.index]= 0
                 enemy_list[x.index].shooting = False 
-
-
-            #Move projectile, using projectile function in projectile class
-            #blit projectile
+           
 
     font = pygame.font.SysFont("comicsans", 40, True)    
     text = font.render(f'Health Remaining: {round(player.health,2)}', 1, RED) # Arguments are: text, anti-aliasing, color
