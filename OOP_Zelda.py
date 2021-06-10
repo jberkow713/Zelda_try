@@ -30,9 +30,9 @@ sword_pos = (0,0)
 
 player_speed = 10
 
-def randomize():
+def randomize(number):
     num = random.randint(0,10)
-    if num >=7:
+    if num >=number:
         return True
     else:
         return False      
@@ -232,6 +232,7 @@ class Enemy:
 
     def get_coords_projectile(self, other):
         if self.shooting_check(other):
+            
             coords =  (self.x, self.y, self.shooting_check(other)[1])
             coord_x = self.x
             coord_y = self.y  
@@ -921,9 +922,13 @@ while running:
             if enemy.get_coords_projectile(player):
 
                 coords = enemy.get_coords_projectile(player)
-                weapon = Projectile(coords[0], coords[1], Enemy_Weapon, coords[2], enemy.index)
-                projectile_list[enemy.index]= weapon
-                enemy.shooting= True 
+                
+                if randomize(7)==True:
+                    
+
+                    weapon = Projectile(coords[0], coords[1], Enemy_Weapon, coords[2], enemy.index)
+                    projectile_list[enemy.index]= weapon
+                    enemy.shooting= True 
           
 
         Collision = False 
@@ -974,7 +979,7 @@ while running:
                 
                 enemy.health -=1
                                      
-        if randomize() == True:
+        if randomize(7) == True:
             
             enemy.update()
                 
