@@ -78,6 +78,8 @@ Enemy_Weapon = pygame.transform.scale(Enemy_Weapon, (50, 50))
 WALL= pygame.image.load("Zelda_Wall.jpg")
 WALL = pygame.transform.scale(WALL, (100, 100))
 
+DOOR = pygame.image.load("black_square.png").convert_alpha()
+DOOR = pygame.transform.scale(DOOR, (100, 100))
 
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
@@ -814,7 +816,10 @@ def room_1():
     for i in range (2*int(HEIGHT/wallsize)):
         OBJECT(0+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
         OBJECT(WIDTH-wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
-    
+    for i in range(2):
+        OBJECT (WIDTH/2+i*50, -23, DOOR, 150)
+    for i in range(2):
+        OBJECT (WIDTH/2+i*50, HEIGHT+23, DOOR, 150)    
     for i in range(6):
 
         Enemy(250+i*200,250, ghost, 'ghost')
