@@ -191,7 +191,7 @@ class Enemy:
         enemy_index +=1       
 
     def get_health(self):
-        health_dict = {'ghost': 40, 'dragon':200, 'centaur':60}
+        health_dict = {'ghost': 4, 'dragon':20, 'centaur':6}
         for k,v in health_dict.items():
             if self.type == k:
                 return v
@@ -1005,7 +1005,7 @@ while running:
             pos = (player.x, player.y, player.size/2)
             pos_1.append(pos)
             if Collide(x.x, x.y, x.size, .3, 0, pos_1)==True:
-                player.health -=.07
+                player.health -=.01
 
             x.x, x.y = x.move_projectile()
 
