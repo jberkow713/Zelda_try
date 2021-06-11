@@ -173,7 +173,8 @@ class Enemy:
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
-        self.direction = None 
+        self.direction = None
+        self.path = None  
         self.movement = ['up', 'down', 'left', 'right']
         enemy_list.append(self)
         Coord_List.append((self.x, self.y))
@@ -398,8 +399,21 @@ class Enemy:
 
         
         if Attacking == False:
+            
+            if self.path == None:
                 
-            self.direction = self.movement[random.randint(0, len(self.movement)-1)]
+                self.direction = self.movement[random.randint(0, len(self.movement)-1)]
+                
+            
+            if self.path == 'up':
+                self.direction = 'up'
+            if self.path == 'down':
+                self.direction = 'down'
+            if self.path == 'right':
+                self.direction = 'right'
+            if self.path == 'left':
+                self.direction = 'left'
+
 
             if self.direction == 'up':
                 current_x = self.x
@@ -413,16 +427,22 @@ class Enemy:
                         self.x = current_x
                         self.y = current_y                                           
                         self.rect.center = (self.x, self.y)
+                        self.path = 'up'
+                        self.down = False  
+                        self.up = True
+                        self.left = False
+                        self.right = False 
                     
                     else:
-                        self.y += self.speed
-                        self.x +=0
-                        self.rect.center = (self.x, self.y) 
-                
-                self.down = False  
-                self.up = True
-                self.left = False
-                self.right = False    
+                        self.rect.center = (self.x, self.y)
+                        self.path = None
+                        
+                else:
+                    self.rect.center = (self.x, self.y)
+                    self.path = None
+                            
+                                    
+                    
 
             if self.direction == 'down':
                 current_x = self.x
@@ -436,15 +456,17 @@ class Enemy:
                         self.x = current_x
                         self.y = current_y
                         self.rect.center = (self.x, self.y)
+                        self.path = 'down'
+                        self.down = True   
+                        self.up = False 
+                        self.left = False
+                        self.right = False
                     else:
-                        self.y -= self.speed
-                        self.x +=0
-                        self.rect.center = (self.x, self.y)                     
-
-                self.down = True   
-                self.up = False 
-                self.left = False
-                self.right = False 
+                        self.rect.center = (self.x, self.y)
+                        self.path = None
+                else:
+                    self.rect.center = (self.x, self.y)
+                    self.path = None                         
 
             if self.direction == 'left':
                 current_x = self.x
@@ -458,14 +480,18 @@ class Enemy:
                         self.x = current_x
                         self.y = current_y
                         self.rect.center = (self.x, self.y)
+                        self.down = False    
+                        self.up = False 
+                        self.left = True 
+                        self.right = False
+                        self.path = 'left' 
                     else:
-                        self.y += 0
-                        self.x += self.speed 
+                            
                         self.rect.center = (self.x, self.y)
-                self.down = False    
-                self.up = False 
-                self.left = True 
-                self.right = False          
+                        self.path = None
+                else:
+                    self.rect.center = (self.x, self.y)
+                    self.path = None                                
                         
             if self.direction == 'right':
                 current_x = self.x
@@ -479,15 +505,20 @@ class Enemy:
                         self.x = current_x
                         self.y = current_y                                                
                         self.rect.center = (self.x, self.y)
+                        self.down = False    
+                        self.up = False 
+                        self.left = False  
+                        self.right = True
+                        self.path = 'right' 
                     else:                    
-                        self.y += 0
-                        self.x -= self.speed 
+                        
                         self.rect.center = (self.x, self.y)
-                
-                self.down = False    
-                self.up = False 
-                self.left = False  
-                self.right = True          
+                        self.path = None
+                else:
+
+                    self.rect.center = (self.x, self.y)
+                    self.path = None             
+                                            
 
 class Sword:
     def __init__(self, owner):
