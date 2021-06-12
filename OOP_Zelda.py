@@ -168,6 +168,8 @@ class Enemy:
         self.x = x
         self.y = y
         self.invisible = False
+        self.invis_count = 0
+        self.type = type 
         self.create_stats()
         self.size = 100
         self.image = image
@@ -178,7 +180,6 @@ class Enemy:
         self.movement = ['up', 'down', 'left', 'right']
         enemy_list.append(self)
         Coord_List.append((self.x, self.y))
-        self.type = type 
         self.health = self.get_health()
         self.hit = False
         self.down = True #enemy faces down by default
@@ -201,11 +202,16 @@ class Enemy:
 
     def create_stats(self):
         
+        invis_dict = {'ghost':True, 'dragon':False, 'centaur':False}
+        for k,v in invis_dict.items():
+            if self.type == k:
+                if randomize(6)==True:
+                    self.invisible = v 
+
         self.speed = random.randint(5,7)
         self.aggressiveness = random.randint(2,5)
-        invis_roll = random.randint(0,10)
-        if invis_roll > 7:
-            self.invisible = True 
+                
+        
     def shooting_check(self, other):
         #checking if enemy in range to shoot
         if abs(self.x - other.x) <15:
@@ -1018,10 +1024,29 @@ while running:
         if randomize(7) == True:
             
             enemy.update()
-                
-        if enemy.health >0:    
-            screen.blit(enemy.image, enemy.rect)
 
+        if enemy.invis_count ==0:
+
+            if enemy.health >0:
+                if enemy.invisible == True:
+                    a = randomize(9)
+                    b = randomize(9)
+                    c = randomize(9)
+                    if a ==True and b == True and c ==True :         
+                            
+
+                        #initiate invisibility
+                            enemy.invis_count +=1                        
+                    else:
+                        screen.blit(enemy.image, enemy.rect)
+                else:
+                    screen.blit(enemy.image, enemy.rect)
+        
+        if enemy.invis_count >0:
+            enemy.invis_count +=1
+            if enemy.invis_count ==40:
+                enemy.invis_count = 0             
+                
         if enemy.health <=0:
             #take off board if health goes to 0
             enemy.x = -1000
