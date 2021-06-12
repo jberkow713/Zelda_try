@@ -78,7 +78,7 @@ ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
 
 dragon = pygame.image.load("DRAGON_ZELDA.jpg")
-dragon  = pygame.transform.scale(dragon , (125, 125))
+dragon  = pygame.transform.scale(dragon , (250, 250))
 
 Tree = pygame.image.load('TREE_PNG.png')
 Mountain = pygame.image.load('MOUNTAIN_PNG.png')
@@ -116,6 +116,7 @@ def Collide(x, y, size, buffer, starting_position, list):
         if x >=x_range[0]-(buffer*size) and x <= x_range[1]+(buffer*size):
             if y >= y_range[0]-(buffer*size) and y <= y_range[1]+(buffer*size):
                 return True    
+
 
 class OBJECT:
     def __init__(self, x, y, image, size):
@@ -161,7 +162,7 @@ class Projectile:
         return self.x, self.y
 
 class Enemy:
-    def __init__(self,x,y, image, type):
+    def __init__(self,x,y, image, type,size):
         
         self.x = x
         self.y = y
@@ -169,7 +170,7 @@ class Enemy:
         self.invis_count = 0
         self.type = type 
         self.create_stats()
-        self.size = 100
+        self.size = size
         self.image = image
         self.image.set_colorkey(WHITE) 
         self.rect = self.image.get_rect()
@@ -851,9 +852,9 @@ def room_1():
         OBJECT (WIDTH/2+i*50, HEIGHT+23, DOOR, 150)    
     for i in range(6):
 
-        Enemy(250+i*200,250, ghost, 'ghost')
+        Enemy(250+i*200,250, ghost, 'ghost',100)
     
-    Enemy(1000, 750, dragon, 'dragon')
+    Enemy(1000, 750, dragon, 'dragon',250)
 
     for i in range(8):
         OBJECT(500+i*25, 400, Tree, 50)
@@ -877,7 +878,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()    
-
+    
     if event.type == pygame.KEYDOWN:
         
         player.update()    
@@ -916,7 +917,7 @@ while running:
             player.invincible = False
 
     #Placeholder for now, when he dies
-    if player.health == 0:
+    if player.health <= 0:
         sys.exit()
         
     screen.fill(GROUND_COLOR)
