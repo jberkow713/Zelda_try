@@ -203,7 +203,7 @@ class Enemy:
                 if randomize(6)==True:
                     self.invisible = v 
 
-        self.speed = random.randint(5,7)
+        self.speed = random.randint(2,5)
         self.aggressiveness = random.randint(2,5)
                 
         
@@ -1007,9 +1007,9 @@ while running:
                 
                 enemy.health -=1
                                      
-        if randomize(7) == True:
+        # if randomize(7) == True:
             
-            enemy.update()
+        enemy.update()
         #invisibility loop
         if enemy.invis_count == 0:
 
