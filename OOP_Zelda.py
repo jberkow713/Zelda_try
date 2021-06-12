@@ -30,13 +30,6 @@ sword_pos = (0,0)
 
 player_speed = 10
 
-def randomize(number):
-    num = random.randint(0,10)
-    if num >=number:
-        return True
-    else:
-        return False      
-
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -95,9 +88,13 @@ object_list = []
 enemy_length = 0
 enemy_index = 0
 
-# projectile_list = [0]*enemy_length
+def randomize(number):
+    num = random.randint(0,10)
+    if num >=number:
+        return True
+    else:
+        return False  
 
-#TODO IMPLEMENT GENERIC COLLISION FUNCTION
 def Collide(x, y, size, buffer, starting_position, list):
     #Check collisions for enemies, objects, Link, etc...
 
@@ -158,9 +155,7 @@ class Projectile:
         elif self.direction == 'LEFT':
             self.x -= self.speed
 
-        return self.x, self.y    
-
-
+        return self.x, self.y
 
 class Enemy:
     def __init__(self,x,y, image, type):
@@ -231,7 +226,6 @@ class Enemy:
                 if self.x > other.x:
 
                     if self.get_direction() == 'LEFT':
-
                         
                         return  True, 'LEFT'
                 if self.x < other.x:
@@ -254,10 +248,8 @@ class Enemy:
             elif coords[2] == 'LEFT':
                 coord_x -= self.size/2
 
-            return coord_x, coord_y, coords[2]                
-            
+            return coord_x, coord_y, coords[2]
 
-                
     def coords_to_avoid(self, coord):
         #Start with a list of all other enemies, and eventually objects,  that exist on the map              
         
@@ -408,8 +400,7 @@ class Enemy:
             
             if self.path == None:
                 
-                self.direction = self.movement[random.randint(0, len(self.movement)-1)]
-                
+                self.direction = self.movement[random.randint(0, len(self.movement)-1)]                
             
             if self.path == 'up':
                 self.direction = 'up'
@@ -419,7 +410,6 @@ class Enemy:
                 self.direction = 'right'
             if self.path == 'left':
                 self.direction = 'left'
-
 
             if self.direction == 'up':
                 current_x = self.x
@@ -445,10 +435,7 @@ class Enemy:
                         
                 else:
                     self.rect.center = (self.x, self.y)
-                    self.path = None
-                            
-                                    
-                    
+                    self.path = None                   
 
             if self.direction == 'down':
                 current_x = self.x
@@ -491,8 +478,7 @@ class Enemy:
                         self.left = True 
                         self.right = False
                         self.path = 'left' 
-                    else:
-                            
+                    else:                            
                         self.rect.center = (self.x, self.y)
                         self.path = None
                 else:
@@ -516,8 +502,7 @@ class Enemy:
                         self.left = False  
                         self.right = True
                         self.path = 'right' 
-                    else:                    
-                        
+                    else:                        
                         self.rect.center = (self.x, self.y)
                         self.path = None
                 else:
@@ -527,6 +512,7 @@ class Enemy:
                                             
 
 class Sword:
+    
     def __init__(self, owner):
         self.owner = owner
         self.image = self.load_sword() 
@@ -577,6 +563,7 @@ class Link:
         self.ring = None 
         Links_Pos.append(self.rect.center)
         Object_Coords.append((self.x, self.y))
+    
     def direction(self):
         if self.up == True:
             return 'UP'
@@ -586,6 +573,7 @@ class Link:
             return 'LEFT'
         if self.right == True:
             return 'RIGHT'            
+    
     def coords_to_avoid(self, coord):
         #When Link is not invincible, makes sure he does not move over objects, or enemies
         # Return 99 if runs into an enemy
@@ -896,8 +884,7 @@ while running:
             enemy_list.clear()
             object_list.clear()
             player.y = HEIGHT - 150 
-            Object_Coords.append((player.x, player.y))
-            
+            Object_Coords.append((player.x, player.y))            
             enemy_length = 0
             enemy_index = 0
             room_1()                          
@@ -910,8 +897,7 @@ while running:
             enemy_list.clear()
             object_list.clear()
             player.y = 150
-            Object_Coords.append((player.x, player.y))
-            
+            Object_Coords.append((player.x, player.y))            
             enemy_length = 0
             enemy_index = 0
             room_1()
@@ -952,7 +938,7 @@ while running:
     screen.blit(sword.image, sword.rect)
     sword.x = -1000
     sword.y = -1000
-   
+
     #This is the invincible check when a player is not moving, to prevent
     # Staying inside the enemy object without taking damage
     player.non_moving_check()
@@ -1024,18 +1010,16 @@ while running:
         if randomize(7) == True:
             
             enemy.update()
-
-        if enemy.invis_count ==0:
+        #invisibility loop
+        if enemy.invis_count == 0:
 
             if enemy.health >0:
                 if enemy.invisible == True:
                     a = randomize(9)
                     b = randomize(9)
                     c = randomize(9)
-                    if a ==True and b == True and c ==True :         
-                            
-
-                        #initiate invisibility
+                    if a ==True and b == True and c ==True :
+                            #initiate invisibility
                             enemy.invis_count +=1                        
                     else:
                         screen.blit(enemy.image, enemy.rect)
