@@ -77,6 +77,9 @@ DOOR = pygame.transform.scale(DOOR, (100, 100))
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
 
+dragon = pygame.image.load("DRAGON_ZELDA.jpg")
+dragon  = pygame.transform.scale(dragon , (125, 125))
+
 Tree = pygame.image.load('TREE_PNG.png')
 Mountain = pygame.image.load('MOUNTAIN_PNG.png')
 #list for enemy collision checking
@@ -168,6 +171,7 @@ class Enemy:
         self.create_stats()
         self.size = 100
         self.image = image
+        self.image.set_colorkey(WHITE) 
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
         self.direction = None
@@ -200,8 +204,8 @@ class Enemy:
         invis_dict = {'ghost':True, 'dragon':False, 'centaur':False}
         for k,v in invis_dict.items():
             if self.type == k:
-                if randomize(6)==True:
-                    self.invisible = v 
+                # if randomize(6)==True:
+                self.invisible = v 
 
         self.speed = random.randint(2,5)
         self.aggressiveness = random.randint(2,5)
@@ -848,7 +852,9 @@ def room_1():
     for i in range(6):
 
         Enemy(250+i*200,250, ghost, 'ghost')
-        
+    
+    Enemy(1000, 750, dragon, 'dragon')
+
     for i in range(8):
         OBJECT(500+i*25, 400, Tree, 50)
         OBJECT(500+i*25, 550, Tree, 50)
