@@ -97,10 +97,19 @@ def randomize(number):
         return True
     else:
         return False  
+  
 def Collide(x, y, size, buffer, starting_position, list):
     #Check collisions for enemies, objects, Link, etc...
-
-    for A in list[starting_position:]:
+    left_x = x - 4 * size 
+    right_x = x + 4 * size 
+    upper = y - 5.5*size 
+    lower = y + 5.5*size 
+        
+    possible_vals = list[starting_position:]
+        
+    usable_list = [x for x in possible_vals if x[0]-x[2]>=left_x and x[0]+x[2] <= right_x and x[1]-x[2]> upper and x[1]+x[2]< lower ]
+    print(len(usable_list))
+    for A in usable_list:
         x_range = []
         y_range = []
         left_x = A[0] - A[2]
@@ -114,36 +123,8 @@ def Collide(x, y, size, buffer, starting_position, list):
 
         if x >=x_range[0]-(buffer*size) and x <= x_range[1]+(buffer*size):
             if y >= y_range[0]-(buffer*size) and y <= y_range[1]+(buffer*size):
+                
                 return True    
-# def Collide(x, y, size, buffer, starting_position, list):
-#     #Check collisions for enemies, objects, Link, etc...
-#     left_x = x - 6*size 
-#     right_x = x +6*size 
-#     upper = y - 6*size 
-#     lower = y + 6*size 
-        
-#     possible_vals = list[starting_position:]
-#     # print(len(possible_vals))
-    
-#     usable_list = [x for x in possible_vals if x[0]-x[2]>=left_x and x[0]+x[2] <= right_x and x[1]-x[2] >= upper and x[1]+x[2] <=lower]
-#     # print(len(usable_list))
-
-#     for A in usable_list:
-#         x_range = []
-#         y_range = []
-#         left_x = A[0] - A[2]
-#         right_x = A[0] + A[2]
-#         high_y = A[1] - A[2]
-#         low_y = A[1] + A[2]
-#         x_range.append(left_x)
-#         x_range.append(right_x)
-#         y_range.append(high_y)
-#         y_range.append(low_y)
-
-#         if x >=x_range[0]-(buffer*size) and x <= x_range[1]+(buffer*size):
-#             if y >= y_range[0]-(buffer*size) and y <= y_range[1]+(buffer*size):
-#                 print('hi')
-#                 return True    
 
 
 class OBJECT:
@@ -881,7 +862,7 @@ def room_1():
         OBJECT (WIDTH/2+i*50, -23, DOOR, 150)
     for i in range(2):
         OBJECT (WIDTH/2+i*50, HEIGHT+23, DOOR, 150)    
-    for i in range(6):
+    for i in range(3):
 
         Enemy(250+i*200,250, ghost, 'ghost',100)
     
@@ -1046,8 +1027,7 @@ while running:
                 
                 enemy.health -=1
                                      
-        # if randomize(7) == True:
-            
+                    
         enemy.update()
         #invisibility loop
         if enemy.invis_count == 0:
