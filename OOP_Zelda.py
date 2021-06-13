@@ -97,7 +97,6 @@ def randomize(number):
         return True
     else:
         return False  
-
 def Collide(x, y, size, buffer, starting_position, list):
     #Check collisions for enemies, objects, Link, etc...
 
@@ -116,6 +115,35 @@ def Collide(x, y, size, buffer, starting_position, list):
         if x >=x_range[0]-(buffer*size) and x <= x_range[1]+(buffer*size):
             if y >= y_range[0]-(buffer*size) and y <= y_range[1]+(buffer*size):
                 return True    
+# def Collide(x, y, size, buffer, starting_position, list):
+#     #Check collisions for enemies, objects, Link, etc...
+#     left_x = x - 6*size 
+#     right_x = x +6*size 
+#     upper = y - 6*size 
+#     lower = y + 6*size 
+        
+#     possible_vals = list[starting_position:]
+#     # print(len(possible_vals))
+    
+#     usable_list = [x for x in possible_vals if x[0]-x[2]>=left_x and x[0]+x[2] <= right_x and x[1]-x[2] >= upper and x[1]+x[2] <=lower]
+#     # print(len(usable_list))
+
+#     for A in usable_list:
+#         x_range = []
+#         y_range = []
+#         left_x = A[0] - A[2]
+#         right_x = A[0] + A[2]
+#         high_y = A[1] - A[2]
+#         low_y = A[1] + A[2]
+#         x_range.append(left_x)
+#         x_range.append(right_x)
+#         y_range.append(high_y)
+#         y_range.append(low_y)
+
+#         if x >=x_range[0]-(buffer*size) and x <= x_range[1]+(buffer*size):
+#             if y >= y_range[0]-(buffer*size) and y <= y_range[1]+(buffer*size):
+#                 print('hi')
+#                 return True    
 
 
 class OBJECT:
@@ -172,6 +200,7 @@ class Enemy:
         self.create_stats()
         self.size = size
         self.image = image
+        self.rescale()
         self.image.set_colorkey(WHITE) 
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
@@ -193,7 +222,9 @@ class Enemy:
         global enemy_index
         self.index = enemy_index 
         enemy_index +=1       
-
+    
+    def rescale(self):
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
     def get_health(self):
         health_dict = {'ghost': 4, 'dragon':20, 'centaur':6}
         for k,v in health_dict.items():
@@ -854,7 +885,7 @@ def room_1():
 
         Enemy(250+i*200,250, ghost, 'ghost',100)
     
-    Enemy(1000, 750, dragon, 'dragon',250)
+    Enemy(1000, 750, dragon, 'dragon',125)
 
     for i in range(8):
         OBJECT(500+i*25, 400, Tree, 50)
@@ -973,7 +1004,8 @@ while running:
         pos = (enemy.x, enemy.y, enemy.size/2)
         pos_1.append(pos)
 
-        if Collide(sword_pos[0], sword_pos[1], 0,0,0, pos_1)==True:
+        if Collide(sword_pos[0], sword_pos[1], 75,0,0, pos_1)==True:
+                        
 
             enemy_new_x = enemy.x
             enemy_new_y = enemy.y
