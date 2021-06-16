@@ -88,6 +88,8 @@ Object_Coords = []
 #list for enemy movement
 enemy_list = []
 object_list = []
+Door_Coords = []
+Door_List = []
 enemy_length = 0
 enemy_index = 0
 
@@ -108,7 +110,7 @@ def Collide(x, y, size, buffer, starting_position, list):
     possible_vals = list[starting_position:]
         
     usable_list = [x for x in possible_vals if x[0]-x[2]>=left_x and x[0]+x[2] <= right_x and x[1]-x[2]> upper and x[1]+x[2]< lower ]
-    print(len(usable_list))
+    
     for A in usable_list:
         x_range = []
         y_range = []
@@ -128,14 +130,16 @@ def Collide(x, y, size, buffer, starting_position, list):
 
 
 class OBJECT:
-    def __init__(self, x, y, image, size):
+    def __init__(self, x, y, image, size,door=None):
         self.x = x
         self.y = y
         self.size = size 
         self.image = image
+        self.door = door  
         # We set image so it ignores background of white
         self.image.set_colorkey(WHITE) 
         self.rescale()
+        self.get_door_coords()
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
 
@@ -143,6 +147,11 @@ class OBJECT:
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         Object_Coords.append((self.x, self.y, self.size/2))
         object_list.append(self)
+    def get_door_coords(self):
+        if self.door != None:
+            Door_Coords.append((self.x, self.y, self.size/2))
+            
+
 
 class Projectile:
     def __init__(self, x, y, image, direction, index):
@@ -858,10 +867,16 @@ def room_1():
     for i in range (2*int(HEIGHT/wallsize)):
         OBJECT(0+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
         OBJECT(WIDTH-wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
+    
     for i in range(2):
-        OBJECT (WIDTH/2+i*50, -23, DOOR, 150)
+        OBJECT (WIDTH/2+i*50, -23, DOOR, 150, door=True)
     for i in range(2):
-        OBJECT (WIDTH/2+i*50, HEIGHT+23, DOOR, 150)    
+        OBJECT (WIDTH/2+i*50, HEIGHT+23, DOOR, 150, door=True)    
+    for i in range(2):
+        OBJECT (0, HEIGHT/2+i*50, DOOR, 150, door=True)
+    for i in range(2):
+        OBJECT (WIDTH, HEIGHT/2 + i*50, DOOR, 150, door=True) 
+    
     for i in range(3):
 
         Enemy(250+i*200,250, ghost, 'ghost',100)
@@ -879,9 +894,14 @@ def room_1():
     projectile_list = [0]*enemy_length    
     
     return 
+#TODO room2, or room function in general to randomly create rooms 
+# def create_room():
+
+
+
 
 room_1()
-
+print(Door_Coords)
 #TODO create bunch of different rooms, customize each to a specific screen, load in a screen, and then randomize the room and enemy types
 
 running = True
@@ -894,32 +914,34 @@ while running:
     if event.type == pygame.KEYDOWN:
         
         player.update()    
-    
-    if player.x == WIDTH//2:
-        if player.y <150:
-            Coord_List.clear()
-            Object_Coords.clear()
-            #list for enemy movement
-            enemy_list.clear()
-            object_list.clear()
-            player.y = HEIGHT - 150 
-            Object_Coords.append((player.x, player.y))            
-            enemy_length = 0
-            enemy_index = 0
-            room_1()                          
+    if Collide(player.x, player.y, player.size, .7, 0, Door_Coords):
+        
+        Coord_List.clear()
+        Object_Coords.clear()
+        #list for enemy movement
+        enemy_list.clear()
+        object_list.clear()
+        if player.y <200:
 
-    if player.x == WIDTH//2:
-        if player.y > HEIGHT-150:
-            Coord_List.clear()
-            Object_Coords.clear()
-            #list for enemy movement
-            enemy_list.clear()
-            object_list.clear()
-            player.y = 150
-            Object_Coords.append((player.x, player.y))            
-            enemy_length = 0
-            enemy_index = 0
-            room_1()
+            player.x = WIDTH/2
+            player.y = HEIGHT - 2.1*player.size 
+        elif player.y > HEIGHT - 2*player.size:
+            player.x = WIDTH/2
+            player.y = 2.1*player.size 
+        elif player.x < 2*player.size:
+            player.x = WIDTH - 2.1*player.size
+            player.y = HEIGHT/2
+        else:
+            player.x = 2.1*player.size
+            player.y = HEIGHT/2
+
+
+
+        Object_Coords.append((player.x, player.y))            
+        enemy_length = 0
+        enemy_index = 0
+        room_1()                          
+    
     
     #this is the invincible check after player moves or is hit    
     if player.invincible:
