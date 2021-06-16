@@ -139,7 +139,8 @@ class OBJECT:
         # We set image so it ignores background of white
         self.image.set_colorkey(WHITE) 
         self.rescale()
-        self.get_door_coords()
+        if door != None:
+            Door_Coords.append((self.x, self.y, self.size/2))
         self.rect = self.image.get_rect()
         self.rect.center = (self.x, self.y)
 
@@ -147,12 +148,7 @@ class OBJECT:
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         Object_Coords.append((self.x, self.y, self.size/2))
         object_list.append(self)
-    def get_door_coords(self):
-        if self.door != None:
-            Door_Coords.append((self.x, self.y, self.size/2))
-            
-
-
+    
 class Projectile:
     def __init__(self, x, y, image, direction, index):
         #For enemy firing
@@ -894,15 +890,12 @@ def room_1():
     projectile_list = [0]*enemy_length    
     
     return 
+
 #TODO room2, or room function in general to randomly create rooms 
 # def create_room():
 
 
-
-
 room_1()
-print(Door_Coords)
-#TODO create bunch of different rooms, customize each to a specific screen, load in a screen, and then randomize the room and enemy types
 
 running = True
 while running:
@@ -914,6 +907,7 @@ while running:
     if event.type == pygame.KEYDOWN:
         
         player.update()    
+    #Check Link's position to see if he enters new room
     if Collide(player.x, player.y, player.size, .7, 0, Door_Coords):
         
         Coord_List.clear()
@@ -980,7 +974,8 @@ while running:
     #This is the invincible check when a player is not moving, to prevent
     # Staying inside the enemy object without taking damage
     player.non_moving_check()
-    #Create projectile objects  
+    
+    #Create projectile objects and update all enemy movement
     for enemy in enemy_list:
                     
         if enemy.shooting == False:
