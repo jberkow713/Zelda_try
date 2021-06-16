@@ -74,6 +74,9 @@ WALL = pygame.transform.scale(WALL, (100, 100))
 DOOR = pygame.image.load("black_square.png").convert_alpha()
 DOOR = pygame.transform.scale(DOOR, (100, 100))
 
+LOCKED_DOOR = pygame.image.load("Locked_Door.jpg")
+LOCKED_DOOR = pygame.transform.scale(LOCKED_DOOR, (100, 100))
+
 ghost = pygame.image.load("ghost.png").convert_alpha()
 ghost = pygame.transform.scale(ghost, (GHOST_WIDTH, GHOST_HEIGHT))
 
@@ -92,6 +95,7 @@ Door_Coords = []
 Door_List = []
 enemy_length = 0
 enemy_index = 0
+
 
 def randomize(number):
     num = random.randint(0,10)
@@ -130,12 +134,13 @@ def Collide(x, y, size, buffer, starting_position, list):
 
 
 class OBJECT:
-    def __init__(self, x, y, image, size,door=None):
+    def __init__(self, x, y, image, size, door=None):
         self.x = x
         self.y = y
         self.size = size 
         self.image = image
-        self.door = door  
+        self.door = door
+        
         # We set image so it ignores background of white
         self.image.set_colorkey(WHITE) 
         self.rescale()
@@ -207,7 +212,9 @@ class Enemy:
         enemy_length+=1
         global enemy_index
         self.index = enemy_index 
-        enemy_index +=1       
+        enemy_index +=1
+                
+               
     
     def rescale(self):
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
@@ -855,6 +862,13 @@ sword = Sword(player)
 player.sword = sword
 
 def room_1():
+    global LOCKED
+    LOCKED = False 
+    door = DOOR    
+    locked = random.randint(0,10)
+    if locked > 8:
+        LOCKED = True
+        door = LOCKED_DOOR  
 
     wallsize = 50
     for i in range (2*int(WIDTH/wallsize)):
@@ -864,14 +878,17 @@ def room_1():
         OBJECT(0+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
         OBJECT(WIDTH-wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
     
+
     for i in range(2):
-        OBJECT (WIDTH/2+i*50, -23, DOOR, 150, door=True)
+        OBJECT (WIDTH/2+i*50, -23, door, 150, door=True)
     for i in range(2):
-        OBJECT (WIDTH/2+i*50, HEIGHT+23, DOOR, 150, door=True)    
+        OBJECT (WIDTH/2+i*50, HEIGHT+23, door, 150, door=True)    
     for i in range(2):
-        OBJECT (0, HEIGHT/2+i*50, DOOR, 150, door=True)
+        OBJECT (0, HEIGHT/2+i*50, door, 150, door=True)
     for i in range(2):
-        OBJECT (WIDTH, HEIGHT/2 + i*50, DOOR, 150, door=True) 
+        OBJECT (WIDTH, HEIGHT/2 + i*50, door, 150, door=True)
+
+
     
     for i in range(3):
 
@@ -887,7 +904,8 @@ def room_1():
     
     #resetting projectile list
     global projectile_list
-    projectile_list = [0]*enemy_length    
+    projectile_list = [0]*enemy_length
+
     
     return 
 
@@ -908,30 +926,33 @@ while running:
         
         player.update()    
     #Check Link's position to see if he enters new room
-    if Collide(player.x, player.y, player.size, .7, 0, Door_Coords):
-        
-        Coord_List.clear()
-        Object_Coords.clear()
-        #list for enemy movement
-        enemy_list.clear()
-        object_list.clear()
-        if player.y <2*player.size:
-            player.x = WIDTH/2
-            player.y = HEIGHT - 2.1*player.size 
-        elif player.y > HEIGHT - 2*player.size:
-            player.x = WIDTH/2
-            player.y = 2.1*player.size 
-        elif player.x < 2*player.size:
-            player.x = WIDTH - 2.1*player.size
-            player.y = HEIGHT/2
-        else:
-            player.x = 2.1*player.size
-            player.y = HEIGHT/2
+    if LOCKED == False:
 
-        Object_Coords.append((player.x, player.y))            
-        enemy_length = 0
-        enemy_index = 0
-        room_1()                          
+        if Collide(player.x, player.y, player.size, .7, 0, Door_Coords):
+            
+            Coord_List.clear()
+            Object_Coords.clear()
+            enemy_list.clear()
+            object_list.clear()
+            
+            if player.y <2*player.size:
+                player.x = WIDTH/2
+                player.y = HEIGHT - 2.1*player.size 
+            elif player.y > HEIGHT - 2*player.size:
+                player.x = WIDTH/2
+                player.y = 2.1*player.size 
+            elif player.x < 2*player.size:
+                player.x = WIDTH - 2.1*player.size
+                player.y = HEIGHT/2
+            else:
+                player.x = 2.1*player.size
+                player.y = HEIGHT/2
+
+            Object_Coords.append((player.x, player.y))            
+            enemy_length = 0
+            enemy_index = 0
+            
+            room_1()                          
     
     
     #this is the invincible check after player moves or is hit    
@@ -976,6 +997,7 @@ while running:
     player.non_moving_check()
     
     #Create projectile objects and update all enemy movement
+    counter = 0
     for enemy in enemy_list:
                     
         if enemy.shooting == False:
@@ -1063,12 +1085,33 @@ while running:
             enemy.invis_count +=1
             if enemy.invis_count ==40:
                 enemy.invis_count = 0             
-                
+
+        
+        
         if enemy.health <=0:
+            
             #take off board if health goes to 0
             enemy.x = -1000
             enemy.y = -1000
-    
+            
+        
+        #Check to see if locked doors can open once all enemies are dead        
+        if enemy.x==-1000:
+            if enemy.y == -1000:
+                counter +=1
+        door_convert = 0 
+        if counter == len(enemy_list):
+            LOCKED = False
+            for x in Door_Coords:
+                OBJECT(x[0], x[1], DOOR, 150, door=True)
+                door_convert+=1
+                if door_convert >10:
+                    break
+            break     
+                   
+
+            
+
     sword_pos = sword.x, sword.y 
     
     for x in object_list:
