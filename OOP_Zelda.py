@@ -921,8 +921,7 @@ while running:
         #list for enemy movement
         enemy_list.clear()
         object_list.clear()
-        if player.y <200:
-
+        if player.y <2*player.size:
             player.x = WIDTH/2
             player.y = HEIGHT - 2.1*player.size 
         elif player.y > HEIGHT - 2*player.size:
@@ -934,8 +933,6 @@ while running:
         else:
             player.x = 2.1*player.size
             player.y = HEIGHT/2
-
-
 
         Object_Coords.append((player.x, player.y))            
         enemy_length = 0
