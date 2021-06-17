@@ -1089,7 +1089,7 @@ while running:
         
         
         if enemy.health <=0:
-            
+           
             #take off board if health goes to 0
             enemy.x = -1000
             enemy.y = -1000
@@ -1099,15 +1099,17 @@ while running:
         if enemy.x==-1000:
             if enemy.y == -1000:
                 counter +=1
-        door_convert = 0 
-        if counter == len(enemy_list):
-            LOCKED = False
-            for x in Door_Coords:
-                OBJECT(x[0], x[1], DOOR, 150, door=True)
-                door_convert+=1
-                if door_convert >10:
-                    break
-            break     
+        
+        if LOCKED ==True:
+            door_convert = 0 
+            if counter == len(enemy_list):
+                LOCKED = False
+                for x in Door_Coords:
+                    OBJECT(x[0], x[1], DOOR, 150, door=True)
+                    door_convert+=1
+                    if door_convert >10:
+                        break
+                break     
                    
 
             
