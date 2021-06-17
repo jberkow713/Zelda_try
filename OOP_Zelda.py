@@ -1092,15 +1092,16 @@ while running:
            
             #take off board if health goes to 0
             enemy.x = -1000
-            enemy.y = -1000
-            
+            enemy.y = -1000            
         
         #Check to see if locked doors can open once all enemies are dead        
-        if enemy.x==-1000:
-            if enemy.y == -1000:
-                counter +=1
         
         if LOCKED ==True:
+
+            if enemy.x==-1000:
+                if enemy.y == -1000:
+                    counter +=1       
+        
             door_convert = 0 
             if counter == len(enemy_list):
                 LOCKED = False
