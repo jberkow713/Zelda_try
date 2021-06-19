@@ -871,26 +871,38 @@ def room_1():
         door = LOCKED_DOOR  
 
     wallsize = 50
-    for i in range (2*int(WIDTH/wallsize)):
-        OBJECT(i*wallsize/2, 0+wallsize/2, WALL, wallsize)
-        OBJECT(i*wallsize/2, HEIGHT - wallsize/2, WALL, wallsize)
-    for i in range (2*int(HEIGHT/wallsize)):
-        OBJECT(0+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
-        OBJECT(WIDTH-wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
+    #wall size customization
+    wall_thickness = random.randint(1,10)
+    for j in range(wall_thickness):
+
+        for i in range (2*int(WIDTH/wallsize)):
+            OBJECT(i*wallsize/2, j*wallsize/2+wallsize/2, WALL, wallsize)
+            OBJECT(i*wallsize/2, HEIGHT- j*wallsize/2-wallsize/2, WALL, wallsize)
+        #only create outer side walls if thickness is small, otherwise, exits on sides
+        if wall_thickness <3:
+        
+            for i in range (2*int(HEIGHT/wallsize)):
+                OBJECT(j*wallsize/2+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
+                OBJECT(WIDTH-wallsize/2-j*wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
+     
+
+    #Doors...only top and bottom doors if thickness is under certain size
     
+    if wall_thickness <3:
 
-    for i in range(2):
-        OBJECT (WIDTH/2+i*50, -23, door, 150, door=True)
-    for i in range(2):
-        OBJECT (WIDTH/2+i*50, HEIGHT+23, door, 150, door=True)    
-    for i in range(2):
-        OBJECT (0, HEIGHT/2+i*50, door, 150, door=True)
-    for i in range(2):
-        OBJECT (WIDTH, HEIGHT/2 + i*50, door, 150, door=True)
+        OBJECT (WIDTH/2, wall_thickness*wallsize/2, door, 100, door=True)
+        
+        OBJECT (WIDTH/2, HEIGHT-wall_thickness*wallsize/2, door, 100, door=True)    
+    
+    OBJECT (0, HEIGHT/2, door, 100, door=True)
+    
+    OBJECT (WIDTH, HEIGHT/2 , door, 100, door=True)
 
+    #TODO set up enemies with remaining space
 
     
-    for i in range(3):
+    enemies = random.randint(3,6)
+    for i in range(enemies):
 
         Enemy(250+i*200,250, ghost, 'ghost',100)
     
@@ -1110,10 +1122,7 @@ while running:
                     door_convert+=1
                     if door_convert >10:
                         break
-                break     
-                   
-
-            
+                break              
 
     sword_pos = sword.x, sword.y 
     
