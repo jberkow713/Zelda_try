@@ -879,7 +879,7 @@ def room_1():
             OBJECT(i*wallsize/2, j*wallsize/2+wallsize/2, WALL, wallsize)
             OBJECT(i*wallsize/2, HEIGHT- j*wallsize/2-wallsize/2, WALL, wallsize)
         #only create outer side walls if thickness is small, otherwise, exits on sides
-        if wall_thickness <3:
+        if wall_thickness <2:
         
             for i in range (2*int(HEIGHT/wallsize)):
                 OBJECT(j*wallsize/2+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
@@ -888,7 +888,7 @@ def room_1():
 
     #Doors...only top and bottom doors if thickness is under certain size
     
-    if wall_thickness <3:
+    if wall_thickness <2:
 
         OBJECT (WIDTH/2, wall_thickness*wallsize/2, door, 100, door=True)
         
@@ -900,7 +900,7 @@ def room_1():
 
     #TODO set up enemies with remaining space
 
-    
+
     enemies = random.randint(3,6)
     for i in range(enemies):
 
@@ -917,7 +917,7 @@ def room_1():
     #resetting projectile list
     global projectile_list
     projectile_list = [0]*enemy_length
-
+    
     
     return 
 
@@ -946,6 +946,7 @@ while running:
             Object_Coords.clear()
             enemy_list.clear()
             object_list.clear()
+            Door_Coords.clear()
             
             if player.y <2*player.size:
                 player.x = WIDTH/2
@@ -1118,7 +1119,8 @@ while running:
             if counter == len(enemy_list):
                 LOCKED = False
                 for x in Door_Coords:
-                    OBJECT(x[0], x[1], DOOR, 150, door=True)
+                    
+                    OBJECT(x[0], x[1], DOOR, 100, door=True)
                     door_convert+=1
                     if door_convert >10:
                         break
