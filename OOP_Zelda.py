@@ -95,6 +95,7 @@ Door_Coords = []
 Door_List = []
 enemy_length = 0
 enemy_index = 0
+room_edges = [0]*2
 
 
 def randomize(number):
@@ -870,6 +871,8 @@ def room_1():
         LOCKED = True
         door = LOCKED_DOOR  
 
+    open_coords = []
+
     wallsize = 50
     #wall size customization
     wall_thickness = random.randint(1,10)
@@ -877,15 +880,18 @@ def room_1():
 
         for i in range (2*int(WIDTH/wallsize)):
             OBJECT(i*wallsize/2, j*wallsize/2+wallsize/2, WALL, wallsize)
+        
+            
+        for i in range (2*int(WIDTH/wallsize)):
             OBJECT(i*wallsize/2, HEIGHT- j*wallsize/2-wallsize/2, WALL, wallsize)
+            
         #only create outer side walls if thickness is small, otherwise, exits on sides
         if wall_thickness <2:
         
             for i in range (2*int(HEIGHT/wallsize)):
                 OBJECT(j*wallsize/2+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
                 OBJECT(WIDTH-wallsize/2-j*wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
-     
-
+       
     #Doors...only top and bottom doors if thickness is under certain size
     
     if wall_thickness <2:
@@ -899,20 +905,40 @@ def room_1():
     OBJECT (WIDTH, HEIGHT/2 , door, 100, door=True)
 
     #TODO set up enemies with remaining space
+    ##############################################
+    upper_horiz_bound = 25+(wall_thickness-1)*.5*wallsize
+    lower_horiz_bound = HEIGHT-25 - (wall_thickness-1)*.5*wallsize
+    left_x = 75
+    right_x = WIDTH-75
+    room_edges[0]= upper_horiz_bound
+    room_edges[1] = lower_horiz_bound
 
-
-    enemies = random.randint(3,6)
-    for i in range(enemies):
-
-        Enemy(250+i*200,250, ghost, 'ghost',100)
     
-    Enemy(1000, 750, dragon, 'dragon',125)
 
-    for i in range(8):
-        OBJECT(500+i*25, 400, Tree, 50)
-        OBJECT(500+i*25, 550, Tree, 50)
-        OBJECT(500+i*25, 700, Mountain, 50)
-        OBJECT(500+i*25, 850, Mountain, 50)            
+    #Enemy placement
+    enemies = random.randint(3,5)
+    rows = random.randint(1,2)
+    for i in range(enemies):
+        
+        Enemy(left_x+100+i*(WIDTH/enemies),upper_horiz_bound+100, ghost, 'ghost',100)
+    if rows >1:
+        for i in range(enemies):
+        
+            Enemy(left_x+100+i*(WIDTH/enemies),lower_horiz_bound-100, ghost, 'ghost',100)
+
+    #tree/mountain placement
+    Objects = [3,5]
+    a = random.randint(0,1)
+    Objects = Objects[a]
+    Rows = 3
+    for j in range(Objects):
+        for i in range(Rows):
+            if upper_horiz_bound+200*(j+1) < lower_horiz_bound:
+                if left_x+188+i*WIDTH/Objects < right_x - 188:
+
+                
+                    OBJECT(left_x+188+i*WIDTH/Objects, upper_horiz_bound+165*(j+1), Tree, 50)
+                      
     
     #resetting projectile list
     global projectile_list
@@ -948,12 +974,14 @@ while running:
             object_list.clear()
             Door_Coords.clear()
             
+            
+            
             if player.y <2*player.size:
                 player.x = WIDTH/2
-                player.y = HEIGHT - 2.1*player.size 
+                player.y = room_edges[1]-3*player.size 
             elif player.y > HEIGHT - 2*player.size:
                 player.x = WIDTH/2
-                player.y = 2.1*player.size 
+                player.y = room_edges[0]+3*player.size 
             elif player.x < 2*player.size:
                 player.x = WIDTH - 2.1*player.size
                 player.y = HEIGHT/2
@@ -965,7 +993,7 @@ while running:
             enemy_length = 0
             enemy_index = 0
             
-            room_1()                          
+            room_1()                         
     
     
     #this is the invincible check after player moves or is hit    
