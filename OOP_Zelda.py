@@ -872,6 +872,11 @@ def room_1():
         door = LOCKED_DOOR  
 
     open_coords = []
+    wall_roll = random.randint(0,10)
+    if wall_roll >5:
+        walltype = Tree
+    if wall_roll <=5:
+        walltype = Mountain
 
     wallsize = 50
     #wall size customization
@@ -879,18 +884,18 @@ def room_1():
     for j in range(wall_thickness):
 
         for i in range (2*int(WIDTH/wallsize)):
-            OBJECT(i*wallsize/2, j*wallsize/2+wallsize/2, Tree, wallsize)
+            OBJECT(i*wallsize/2, j*wallsize/2+wallsize/2, walltype, wallsize)
         
             
         for i in range (2*int(WIDTH/wallsize)):
-            OBJECT(i*wallsize/2, HEIGHT- j*wallsize/2-wallsize/2, Tree, wallsize)
+            OBJECT(i*wallsize/2, HEIGHT- j*wallsize/2-wallsize/2, walltype, wallsize)
             
         #only create outer side walls if thickness is small, otherwise, exits on sides
         if wall_thickness <2:
         
             for i in range (2*int(HEIGHT/wallsize)):
-                OBJECT(j*wallsize/2+wallsize/2, HEIGHT - i*wallsize/2, Tree, wallsize)    
-                OBJECT(WIDTH-wallsize/2-j*wallsize/2, HEIGHT - i*wallsize/2, Tree, wallsize)
+                OBJECT(j*wallsize/2+wallsize/2, HEIGHT - i*wallsize/2, walltype, wallsize)    
+                OBJECT(WIDTH-wallsize/2-j*wallsize/2, HEIGHT - i*wallsize/2, walltype, wallsize)
        
     #Doors...only top and bottom doors if thickness is under certain size
     
@@ -925,7 +930,11 @@ def room_1():
         for i in range(enemies):
         
             Enemy(left_x+100+i*(WIDTH/enemies),lower_horiz_bound-100, ghost, 'ghost',100)
-
+    object_roll = random.randint(0,10)
+    if object_roll >5:
+        objecttype = Tree
+    if object_roll <=5:
+        objecttype = Mountain
     #tree/mountain placement
     Objects = [3,5]
     a = random.randint(0,1)
@@ -937,7 +946,7 @@ def room_1():
                 if left_x+188+i*WIDTH/Objects < right_x - 188:
 
                 
-                    OBJECT(left_x+226+i*WIDTH/Objects, upper_horiz_bound+165*(j+1), Mountain, 50)
+                    OBJECT(left_x+226+i*WIDTH/Objects, upper_horiz_bound+165*(j+1), objecttype, 50)
                       
     
     #resetting projectile list
