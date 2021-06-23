@@ -879,22 +879,22 @@ def room_1():
     for j in range(wall_thickness):
 
         for i in range (2*int(WIDTH/wallsize)):
-            OBJECT(i*wallsize/2, j*wallsize/2+wallsize/2, WALL, wallsize)
+            OBJECT(i*wallsize/2, j*wallsize/2+wallsize/2, Tree, wallsize)
         
             
         for i in range (2*int(WIDTH/wallsize)):
-            OBJECT(i*wallsize/2, HEIGHT- j*wallsize/2-wallsize/2, WALL, wallsize)
+            OBJECT(i*wallsize/2, HEIGHT- j*wallsize/2-wallsize/2, Tree, wallsize)
             
         #only create outer side walls if thickness is small, otherwise, exits on sides
         if wall_thickness <2:
         
             for i in range (2*int(HEIGHT/wallsize)):
-                OBJECT(j*wallsize/2+wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)    
-                OBJECT(WIDTH-wallsize/2-j*wallsize/2, HEIGHT - i*wallsize/2, WALL, wallsize)
+                OBJECT(j*wallsize/2+wallsize/2, HEIGHT - i*wallsize/2, Tree, wallsize)    
+                OBJECT(WIDTH-wallsize/2-j*wallsize/2, HEIGHT - i*wallsize/2, Tree, wallsize)
        
     #Doors...only top and bottom doors if thickness is under certain size
     
-    if wall_thickness <2:
+    if wall_thickness <4:
 
         OBJECT (WIDTH/2, wall_thickness*wallsize/2, door, 100, door=True)
         
@@ -931,13 +931,13 @@ def room_1():
     a = random.randint(0,1)
     Objects = Objects[a]
     Rows = 3
-    for j in range(Objects):
-        for i in range(Rows):
+    for j in range(Rows):
+        for i in range(Objects):
             if upper_horiz_bound+200*(j+1) < lower_horiz_bound:
                 if left_x+188+i*WIDTH/Objects < right_x - 188:
 
                 
-                    OBJECT(left_x+188+i*WIDTH/Objects, upper_horiz_bound+165*(j+1), Tree, 50)
+                    OBJECT(left_x+226+i*WIDTH/Objects, upper_horiz_bound+165*(j+1), Mountain, 50)
                       
     
     #resetting projectile list
@@ -978,10 +978,10 @@ while running:
             
             if player.y <2*player.size:
                 player.x = WIDTH/2
-                player.y = room_edges[1]-3*player.size 
+                player.y = room_edges[1]-2.9*player.size 
             elif player.y > HEIGHT - 2*player.size:
                 player.x = WIDTH/2
-                player.y = room_edges[0]+3*player.size 
+                player.y = room_edges[0]+2.9*player.size 
             elif player.x < 2*player.size:
                 player.x = WIDTH - 2.1*player.size
                 player.y = HEIGHT/2
